@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2017-04-05T11:23:32</DateModified>
+  <DateModified>2017-04-05T11:38:46</DateModified>
   <ModuleName>MiniAlu</ModuleName>
-  <SummaryTimeStamp>Unknown</SummaryTimeStamp>
+  <SummaryTimeStamp>2017-04-05T11:31:41</SummaryTimeStamp>
   <SavedFilePath>/home/oscarg/Dropbox/00UU/00_IE0424/GIT/Lab_IE0424/Experimento02/Ejercicio01/iseconfig/TestBench.xreport</SavedFilePath>
   <ImplementationReportsDirectory>/home/oscarg/Dropbox/00UU/00_IE0424/GIT/Lab_IE0424/Experimento02/Ejercicio01</ImplementationReportsDirectory>
-  <DateInitialized>2017-04-05T11:23:32</DateInitialized>
+  <DateInitialized>2017-04-05T11:38:46</DateInitialized>
   <EnableMessageFiltering>false</EnableMessageFiltering>
  </header>
  <body>

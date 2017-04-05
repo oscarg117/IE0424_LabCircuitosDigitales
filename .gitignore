@@ -1,2 +1,10 @@
-Experimento02/Ejercicio01/*
-!Experimento02/Ejercicio01/*.v
+#/*
+#!/Experimento02/Ejercicio01
+#/Experimento02/**
+/Experimento02/Ejercicio01/*
+/Experimento02/Ejercicio01/*/*
+#**/*.gise
+#**/*.xise
+Experimento02/Ejercicio01/Ejercicio01.gise
+!**.v
+!**.ucf
