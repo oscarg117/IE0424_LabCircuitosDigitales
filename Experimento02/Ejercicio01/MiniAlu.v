@@ -17,8 +17,10 @@ reg         rWriteEnable,rBranchTaken;
 wire [27:0] wInstruction;
 wire [3:0]  wOperation;
 reg signed [15:0]   rResult, rResultHI; //Con signo
+reg signed [31:0]	rResultTotal;
 wire [7:0]  wSourceAddr0,wSourceAddr1,wDestination;
 wire signed [15:0] wSourceData0,wSourceData1,wIPInitialValue,wImmediateValue; //Con signo
+
 
 
 ROM InstructionRom 
@@ -172,6 +174,7 @@ begin
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b1;
 		{rResultHI,rResult} <= wSourceData1 * wSourceData0;
+		rResultTotal <= wSourceData1 * wSourceData0;
 //		rResult <= wSourceData1 * wSourceData0;
 	end
 	//-------------------------------------
