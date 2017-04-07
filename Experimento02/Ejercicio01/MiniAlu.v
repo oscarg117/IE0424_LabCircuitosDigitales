@@ -22,7 +22,6 @@ wire [7:0]  wSourceAddr0,wSourceAddr1,wDestination;
 wire signed [15:0] wSourceData0,wSourceData1,wIPInitialValue,wImmediateValue; //Con signo
 
 
-
 ROM InstructionRom 
 (
 	.iAddress(     wIP          ),
@@ -174,7 +173,8 @@ begin
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b1;
 		{rResultHI,rResult} <= wSourceData1 * wSourceData0;
-		rResultTotal <= wSourceData1 * wSourceData0;
+		rResultTotal <= {rResultHI,rResult};
+		//rResultTotal <= wSourceData1 * wSourceData0;
 //		rResult <= wSourceData1 * wSourceData0;
 	end
 	//-------------------------------------

@@ -3,3 +3,4 @@ Experimento02/Ejercicio01/*
 Experimento02/Ejercicio01/**/*
 !*.v
 !*.ucf
+!*.wcfg
