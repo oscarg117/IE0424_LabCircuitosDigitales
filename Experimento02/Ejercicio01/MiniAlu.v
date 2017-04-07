@@ -9,7 +9,7 @@ module MiniAlu
  input wire Reset,
  output wire [7:0] oLed
 
- 
+
 );
 
 wire [15:0]  wIP,wIP_temp;
@@ -23,7 +23,7 @@ wire signed [15:0] wSourceData0,wSourceData1,wIPInitialValue,wImmediateValue; //
 
 
 
-ROM InstructionRom 
+ROM InstructionRom
 (
 	.iAddress(     wIP          ),
 	.oInstruction( wInstruction )
@@ -44,7 +44,7 @@ RAM_DUAL_READ_PORT DataRam
 assign wIPInitialValue = (Reset) ? 8'b0 : wDestination;
 UPCOUNTER_POSEDGE IP
 (
-.Clock(   Clock                ), 
+.Clock(   Clock                ),
 .Reset(   Reset | rBranchTaken ),
 .Initial( wIPInitialValue + 16'd1  ),
 .Enable(  1'b1                 ),
@@ -52,7 +52,7 @@ UPCOUNTER_POSEDGE IP
 );
 assign wIP = (rBranchTaken) ? wIPInitialValue : wIP_temp;
 
-FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FFD1 
+FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FFD1
 (
 	.Clock(Clock),
 	.Reset(Reset),
@@ -148,9 +148,9 @@ begin
 			rBranchTaken <= 1'b1;
 		else
 			rBranchTaken <= 1'b0;
-		
+
 	end
-	//-------------------------------------	
+	//-------------------------------------
 	`JMP:
 	begin
 		rFFLedEN     <= 1'b0;
@@ -158,7 +158,7 @@ begin
 		rResult      <= 0;
 		rBranchTaken <= 1'b1;
 	end
-	//-------------------------------------	
+	//-------------------------------------
 	`LED:
 	begin
 		rFFLedEN     <= 1'b1;
@@ -174,7 +174,7 @@ begin
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b1;
 		{rResultHI,rResult} <= wSourceData1 * wSourceData0;
-		rResultTotal <= wSourceData1 * wSourceData0;
+		rResultTotal <= {rResultHI,rResult};
 //		rResult <= wSourceData1 * wSourceData0;
 	end
 	//-------------------------------------
@@ -184,9 +184,9 @@ begin
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
 		rBranchTaken <= 1'b0;
-	end	
-	//-------------------------------------	
-	endcase	
+	end
+	//-------------------------------------
+	endcase
 end
 
 
