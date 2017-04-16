@@ -1,6 +1,6 @@
 #
-Experimento02/Ejercicio01/*
-Experimento02/Ejercicio01/**/*
-!*.v
-!*.ucf
-!*.wcfg
+#Experimento02/Ejercicio0*/*
+#Experimento02/Ejercicio0*/**/*
+#!*.v
+#!*.ucf
+#!*.wcfg
