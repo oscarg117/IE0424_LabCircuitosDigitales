@@ -14,7 +14,7 @@ begin
 
 	0: oInstruction = { `NOP,	24'd4000    	};
 	1: oInstruction = { `STO,	`R7,16'b0001	};
-	2: oInstruction = { `STO,	`R6,-16'd3		};
+	2: oInstruction = { `STO,	`R6,16'd5		};
 	3: oInstruction = { `STO,	`R3,16'h1		}; 
 	4: oInstruction = { `STO,	`R4,16'd10	};//1000
 	5: oInstruction = { `STO,	`R5,16'd0		};  //j
@@ -30,7 +30,7 @@ begin
 	12: oInstruction = { `BLE,	`LOOP2,`R5,`R4	};	
 	13: oInstruction = { `NOP,	24'd4000		}; 
 //	14: oInstruction = { `ADD,	`R7,`R7,`R3		};
-	14: oInstruction = { `SMUL,	`R7,`R7,`R6		};
+	14: oInstruction = { `IMUL,	`R7,`R7,`R6		};
 	15: oInstruction = { `JMP,	8'd3,16'b0		};
 	default:
 		oInstruction = { `LED,	24'b10101010	};		//NOP
