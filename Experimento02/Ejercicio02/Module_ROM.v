@@ -14,7 +14,7 @@ begin
 
 	0: oInstruction = { `NOP,	24'd4000    	};
 	1: oInstruction = { `STO,	`R7,16'b0001	};
-	2: oInstruction = { `STO,	`R6,16'd5		};
+	2: oInstruction = { `STO,	`R6,16'd3		};
 	3: oInstruction = { `STO,	`R3,16'h1		}; 
 	4: oInstruction = { `STO,	`R4,16'd10	};//1000
 	5: oInstruction = { `STO,	`R5,16'd0		};  //j

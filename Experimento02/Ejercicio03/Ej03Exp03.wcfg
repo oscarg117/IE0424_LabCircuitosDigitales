@@ -3,18 +3,17 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="/home/oscarg/Dropbox/00UU/00_IE0424/Solo/Exp02/Ej02/TestBench_isim_beh.wdb" id="1" type="auto">
+      <db_ref path="/home/oscarg/Dropbox/00UU/00_IE0424/Solo/Exp02/Ej03/TestBench_isim_beh.wdb" id="1" type="auto">
          <top_modules>
             <top_module name="TestBench" />
             <top_module name="glbl" />
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="5" />
+   <WVObjectSize size="4" />
    <wvobject fp_name="/TestBench/oLed" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">oLed[7:0]</obj_property>
       <obj_property name="ObjectShortName">oLed[7:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/TestBench/Clock" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">Clock</obj_property>
@@ -24,14 +23,8 @@
       <obj_property name="ElementShortName">Reset</obj_property>
       <obj_property name="ObjectShortName">Reset</obj_property>
    </wvobject>
-   <wvobject fp_name="/TestBench/uut/rResultTotal" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">rResultTotal[31:0]</obj_property>
-      <obj_property name="ObjectShortName">rResultTotal[31:0]</obj_property>
-      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/TestBench/uut/wArrayMult" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">wArrayMult[15:0]</obj_property>
-      <obj_property name="ObjectShortName">wArrayMult[15:0]</obj_property>
-      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   <wvobject fp_name="/TestBench/uut/wArrayMultGen" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">wArrayMultGen[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wArrayMultGen[31:0]</obj_property>
    </wvobject>
 </wave_config>

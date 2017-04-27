@@ -60,7 +60,11 @@ assign {oC, oR} = iA + iB + iC;
 
 endmodule // FULL_ADDER
 //----------------------------------------------------
-module ARRAY_MULT # ( parameter SIZE=16 )
+
+
+//----------------------------------------------------
+
+module ARRAY_MULT_GEN # ( parameter SIZE=16 )
 (
   input wire [SIZE-1:0] iMulA,    //Multiplicando 1
   input wire [SIZE-1:0] iMulB,    //Multiplicando 2
@@ -93,10 +97,7 @@ FULL_ADDER fa_final
 //
 
 genvar  CurrentRow, CurrentCol;
-
-
 generate
-
 
 //Primera fila recibe 0 como suma anterior
 for (CurrentCol = 0; CurrentCol < MAX_COLS; CurrentCol = CurrentCol + 1)
@@ -150,9 +151,9 @@ for (CurrentRow = 0; CurrentRow < MAX_ROWS; CurrentRow = CurrentRow + 1)
 
           FULL_ADDER fa_interm_NUR
           (
-            .iA(iMulA[CurrentCol] & iMulB[SIZE-1]),
+            .iA(iMulA[CurrentCol] & iMulB[CurrentRow + 1]),
             .iB(wR[CurrentRow][CurrentCol]),
-            .iC(wC[CurrentRow][CurrentCol + 1]),
+            .iC(wC[CurrentRow][CurrentCol]),
             .oR(wR[CurrentRow + 1][CurrentCol - 1]),
             .oC(wC[CurrentRow][CurrentCol + 1])
           );
@@ -163,9 +164,9 @@ for (CurrentRow = 0; CurrentRow < MAX_ROWS; CurrentRow = CurrentRow + 1)
           (
             .iA(iMulA[CurrentCol] & iMulB[SIZE-1]),
             .iB(wR[CurrentRow][CurrentCol]),
-            .iC(wC[CurrentRow][CurrentCol + 1]),
-            .oR(wR[CurrentRow + 1][CurrentCol - 1]),
-            .oC(wC[CurrentRow][CurrentCol + 1])
+            .iC(wC[CurrentRow][CurrentCol]),
+            .oR(oMulR[CurrentCol + MAX_COLS]),
+            .oC(wR[CurrentRow][CurrentCol + 1])
           );
 
         end
@@ -174,128 +175,7 @@ for (CurrentRow = 0; CurrentRow < MAX_ROWS; CurrentRow = CurrentRow + 1)
 
     end
 
-
-
-
-
-
-
-
-
-
-
 endgenerate
-
-
-
-//
-// FULL_ADDER fa_L0_1
-// (
-//   .iA(iMulA[2] & iMulB[0]),
-//   .iB(iMulA[1] & iMulB[1]),
-//   .iC(wC_L0[0]),
-//   .oR(wR_L0[0]),
-//   .oC(wC_L0[1])
-// );
-// //
-// FULL_ADDER fa_L0_2
-// (
-//   .iA(iMulA[3] & iMulB[0]),
-//   .iB(iMulA[2] & iMulB[1]),
-//   .iC(wC_L0[1]),
-//   .oR(wR_L0[1]),
-//   .oC(wC_L0[2])
-// );
-// //
-// FULL_ADDER fa_L0_3
-// (
-//   .iA(1'b0),
-//   .iB(iMulA[3] & iMulB[1]),
-//   .iC(wC_L0[2]),
-//   .oR(wR_L0[2]),
-//   .oC(wC_L0[3])
-// );
-// //
-// //----------------------------------------------------
-// //Nivel 1
-// FULL_ADDER fa_L1_0
-// (
-//   .iA(wR_L0[0]),
-//   .iB(iMulA[0] & iMulB[2]),
-//   .iC(1'b0),
-//   .oR(oMulR[2]),
-//   .oC(wC_L1[0])
-// );
-// //
-// FULL_ADDER fa_L1_1
-// (
-//   .iA(wR_L0[1]),
-//   .iB(iMulA[1] & iMulB[2]),
-//   .iC(wC_L1[0]),
-//   .oR(wR_L1[0]),
-//   .oC(wC_L1[1])
-// );
-// //
-// FULL_ADDER fa_L1_2
-// (
-//   .iA(wR_L0[2]),
-//   .iB(iMulA[2] & iMulB[2]),
-//   .iC(wC_L1[1]),
-//   .oR(wR_L1[1]),
-//   .oC(wC_L1[2])
-// );
-// //
-// FULL_ADDER fa_L1_3
-// (
-//   .iA(iMulA[3] & iMulB[2]),
-//   .iB(wC_L0[3]),
-//   .iC(wC_L1[2]),
-//   .oR(wR_L1[2]),
-//   .oC(wC_L1[3])
-// );
-// //
-// //----------------------------------------------------
-// //Nivel 2
-// FULL_ADDER fa_L2_0
-// (
-//   .iA(wR_L1[0]),
-//   .iB(iMulA[0] & iMulB[3]),
-//   .iC(1'b0),
-//   .oR(oMulR[3]),
-//   .oC(wC_L2[0])
-// );
-// //
-// FULL_ADDER fa_L2_1
-// (
-//   .iA(wR_L1[1]),
-//   .iB(iMulA[1] & iMulB[3]),
-//   .iC(wC_L2[0]),
-//   .oR(oMulR[4]),
-//   .oC(wC_L2[1])
-// );
-// //
-// FULL_ADDER fa_L2_2
-// (
-//   .iA(wR_L1[2]),
-//   .iB(iMulA[2] & iMulB[3]),
-//   .iC(wC_L2[1]),
-//   .oR(oMulR[5]),
-//   .oC(wC_L2[2])
-// );
-// //
-// FULL_ADDER fa_L2_3
-// (
-//   .iA(wC_L1[3]),
-//   .iB(iMulA[3] & iMulB[3]),
-//   .iC(wC_L2[2]),
-//   .oR(oMulR[6]),
-//   .oC(oMulR[7])
-// );
-//
-// //----------------------------------------------------
-// //Se asignan ceros a los MSB
-//
-// assign oMulR[15:8] = 8'd0;
 
 endmodule // ARRAY_MULT
 //----------------------------------------------------

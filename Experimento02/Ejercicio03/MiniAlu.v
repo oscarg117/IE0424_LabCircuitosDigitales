@@ -17,7 +17,7 @@ reg         rWriteEnable,rBranchTaken;
 wire [27:0] wInstruction;
 wire [3:0]  wOperation;
 reg signed [15:0] rResult, rResultHI; //Con signo
-wire signed [15:0] wArrayMult;  //Resultado de array multiplier
+wire signed [31:0] wArrayMultGen;  //Resultado de array multiplier con Generate
 reg signed [31:0]	rResultTotal;
 wire [7:0]  wSourceAddr0,wSourceAddr1,wDestination;
 wire signed [15:0] wSourceData0,wSourceData1,wIPInitialValue,wImmediateValue; //Con signo
@@ -102,13 +102,12 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FF_LEDS
 
 assign wImmediateValue = {wSourceAddr1,wSourceAddr0};
 
-
-//Se instancia un ARRAY_MULT
-ARRAY_MULT arr_mul
+//Se instancia un ARRAY_MULT_GEN
+ARRAY_MULT_GEN # ( 16 ) arr_mul_gen
 (
   .iMulA(wSourceData0),
   .iMulB(wSourceData1),
-  .oMulR(wArrayMult)
+  .oMulR(wArrayMultGen)
 );
 
 always @ ( * )
@@ -191,7 +190,7 @@ begin
 		rFFLedEN     <= 1'b0;
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b1;
-		{rResultHI,rResult} <= wArrayMult;
+		{rResultHI,rResult} <= wArrayMultGen;
 		rResultTotal <= {rResultHI,rResult};
 	end
 	//-------------------------------------
