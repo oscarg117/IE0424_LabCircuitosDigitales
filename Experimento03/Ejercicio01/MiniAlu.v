@@ -1,6 +1,7 @@
 
 `timescale 1ns / 1ps
 `include "Defintions.v"
+`include "Maquina_Estados.v"
 
 
 module MiniAlu
