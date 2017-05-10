@@ -18,7 +18,6 @@ reg         rWriteEnable,rBranchTaken;
 wire [27:0] wInstruction;
 wire [3:0]  wOperation;
 reg signed [15:0] rResult, rResultHI; //Con signo
-wire signed [31:0] wArrayMultGen;  //Resultado de array multiplier con Generate
 reg signed [31:0]	rResultTotal;
 wire [7:0]  wSourceAddr0,wSourceAddr1,wDestination;
 wire signed [15:0] wSourceData0,wSourceData1,wIPInitialValue,wImmediateValue; //Con signo
@@ -104,12 +103,29 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FF_LEDS
 assign wImmediateValue = {wSourceAddr1,wSourceAddr0};
 
 //Se instancia un ARRAY_MULT_GEN
-ARRAY_MULT_GEN # ( 16 ) arr_mul_gen
-(
-  .iMulA(wSourceData0),
-  .iMulB(wSourceData1),
-  .oMulR(wArrayMultGen)
+// ARRAY_MULT_GEN # ( 16 ) arr_mul_gen
+// (
+//   .iMulA(wSourceData0),
+//   .iMulB(wSourceData1),
+//   .oMulR(wArrayMultGen)
+// );
+
+/*
+Module_LCD_Control LCD (
+.Clock ( Clock ) ,
+.Reset ( Reset ) ,
+.wWrite ( rWrite ) ,
+.wData ( rData ) ,
+.wReady ( wReady ) ,
+.oLCD_Enabled ( oLCD_Enabled ) ,
+.oLCD_RegisterSelect ( oLCD_RegisterSelect ) , //0=Command, 1=Data
+.oLCD_StrataFlashControl ( oLCD_StrataFlashControl ) ,
+.oLCD_ReadWrite ( oLCD_ReadWrite ) ,
+.oLCD_Data(oLCD_Data)
 );
+*/
+
+
 
 always @ ( * )
 begin
@@ -186,14 +202,14 @@ begin
 //		rResult <= wSourceData1 * wSourceData0;
 	end
   //-------------------------------------
-	`IMUL:
-	begin
-		rFFLedEN     <= 1'b0;
-		rBranchTaken <= 1'b0;
-		rWriteEnable <= 1'b1;
-		{rResultHI,rResult} <= wArrayMultGen;
-		rResultTotal <= {rResultHI,rResult};
-	end
+	// `IMUL:
+	// begin
+	// 	rFFLedEN     <= 1'b0;
+	// 	rBranchTaken <= 1'b0;
+	// 	rWriteEnable <= 1'b1;
+	// 	{rResultHI,rResult} <= wArrayMultGen;
+	// 	rResultTotal <= {rResultHI,rResult};
+	// end
 	//-------------------------------------
 	default:
 	begin
