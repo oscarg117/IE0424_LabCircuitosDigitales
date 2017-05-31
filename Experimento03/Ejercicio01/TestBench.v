@@ -1,3 +1,4 @@
+
 `timescale 1ns / 1ps
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,24 +23,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-module TestBench(input clk);
+module TestBench;
 
 // Inputs
 reg Clock;
 reg Reset;
-wire rWrite;
-wire [7: 0] rData;
-wire wReady;
-
 
 // Outputs
+wire [7: 0] oLed;
 wire oLCD_Enabled;
 wire oLCD_RegisterSelect;
 wire oLCD_StrataFlashControl;
 wire oLCD_ReadWrite;
-wire [3: 0] oLCD_Data;
-wire [7: 0] oLed;
-
+wire	[3: 0] oLCD_Data;
 
 // Instantiate the Unit Under Test (UUT)
 MiniAlu uut (
@@ -48,8 +44,8 @@ MiniAlu uut (
           .oLed(oLed),
           .oLCD_Enabled(oLCD_Enabled),
           .oLCD_RegisterSelect(oLCD_RegisterSelect),
-          .oLCD_StrataFlashControl(oLCD_StrataFlashContro),
-          .oLCD_ReadWrite(oLCD_StrataFlashContro),
+          .oLCD_StrataFlashControl(oLCD_StrataFlashControl),
+          .oLCD_ReadWrite(oLCD_ReadWrite),
           .oLCD_Data(oLCD_Data)
         );
 
@@ -76,3 +72,5 @@ initial
   end
 
 endmodule
+
+
