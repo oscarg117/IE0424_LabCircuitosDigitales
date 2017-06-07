@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 
-module CONTROL_VGA
+module VGA_CONTROLLER
 (
 input wire [1:0] Clock_25,
 input wire Reset,

@@ -73,7 +73,7 @@ RAM_DUAL_READ_PORT DataRam
 	.oDataOut1(     wPreSourceData1 )
 );
 
-CONTROL_VGA ControlVideo
+VGA_CONTROLLER VideoCtrl
 (
 	.Clock_25(Clock_25),
 	.Reset(NewReset),
@@ -416,7 +416,7 @@ begin
 	//-------------------------------------
 /*	`LCD:
 	begin
-		//
+		//cuando la parte 1 este lista ac� se va a implementar la 2
 	end  */
 	//-------------------------------------
 	default:
