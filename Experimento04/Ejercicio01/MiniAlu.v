@@ -9,12 +9,12 @@ module MiniAlu
  input wire Reset,
  output wire [7:0] oLed,
  output wire oLCD_Enabled,
- output wire oLCD_RegisterSelect, 
+ output wire oLCD_RegisterSelect,
  output wire oLCD_StrataFlashControl,
  output wire oLCD_ReadWrite,
  output wire [3:0] oLCD_Data,
  output wire oVGA_RED,
- output wire oVGA_GREEN, 
+ output wire oVGA_GREEN,
  output wire oVGA_BLUE,
  output wire oVGA_HSYNC,
  output wire oVGA_VSYNC
@@ -33,7 +33,7 @@ wire [15:0] wIPInitialValue,wImmediateValue,wResult16Old,wIPInitialValue_temp,wT
 wire [15:0] wSourceData0_16, wSourceData1_16;
 wire [31:0] wSourceData0,wSourceData1;
 wire [31:0] wPreSourceData0_32, wPreSourceData1_32, wSourceData0_32, wSourceData1_32, wResult32Old, wMult_LUT_Result;
-wire signed[15:0] wsSourceData0,wsSourceData1; 
+wire signed[15:0] wsSourceData0,wsSourceData1;
 wire [23:0] wVGA_ReadAddress;
 wire wReady, wResetEnable;
 wire [3:0] NewReset_temp;
@@ -44,7 +44,7 @@ assign wsSourceData0 = wSourceData0;
 assign wsSourceData1 = wSourceData1;
 
 
-ROM InstructionRom 
+ROM InstructionRom
 (
 	.iAddress(      wIP         ),
 	.oInstruction( wInstruction )
@@ -73,7 +73,7 @@ RAM_DUAL_READ_PORT DataRam
 	.oDataOut1(     wPreSourceData1 )
 );
 
-VGA_CONTROLLER VideoCtrl
+CONTROL_VGA ControlVideo
 (
 	.Clock_25(Clock_25),
 	.Reset(NewReset),
@@ -82,7 +82,7 @@ VGA_CONTROLLER VideoCtrl
 	.oR(oVGA_RED),
 	.oG(oVGA_GREEN),
 	.oB(oVGA_BLUE)
-/*	
+/*
 	.Clock(Clock),
    .Reset(Reset),
    .oVgaRed(oVGA_RED),
@@ -91,7 +91,7 @@ VGA_CONTROLLER VideoCtrl
    .oVgaVsync(oVGA_HSYNC),  //Polarity of horizontal sync pulse is negative.
    .oVgaHsync(oVGA_VSYNC),  //Polarity of vertical sync pulse is negative.
    .oRow(wTemp1),
-	.oCol(wTemp2)	
+	.oCol(wTemp2)
 	*/
    //.oVmemAddress(wVGA_ReadAddress)
 );
@@ -121,7 +121,7 @@ RAM_DUAL_READ_PORT # (32, 8, 8) DataRam32
 
 UPCOUNTER_POSEDGE # ( 2 ) Clock_2
 (
-	.Clock(   Clock  ), 
+	.Clock(   Clock  ),
 	.Reset(   Reset  ),
 	.Initial( 2'b00  ),
 	.Enable(  1'b1  ),
@@ -133,9 +133,9 @@ assign wIPInitialValue_temp = (Reset) ? 8'b0 : wDestination;
 assign wIPInitialValue = (rRET) ? rReturn : wIPInitialValue_temp;
 assign wResetEnable = ( NewReset_temp > 7 ) ? 1'b0 : 1'b1;
 
-UPCOUNTER_POSEDGE # ( 4 ) New_Reset 
+UPCOUNTER_POSEDGE # ( 4 ) New_Reset
 (
-	.Clock(   Clock  ), 
+	.Clock(   Clock  ),
 	.Reset(   Reset  ),
 	.Initial( 4'b0000 ),
 	.Enable(  wResetEnable  ),
@@ -146,7 +146,7 @@ assign NewReset = ((NewReset_temp <= 3) || (NewReset_temp > 7)) ? 1'b0 : 1'b1;
 
 UPCOUNTER_POSEDGE IP
 (
-	.Clock(   Clock                ), 
+	.Clock(   Clock                ),
 	.Reset(   Reset | rBranchTaken ),
 	.Initial( wIPInitialValue + 1  ),
 	.Enable(  1'b1                 ),
@@ -155,7 +155,7 @@ UPCOUNTER_POSEDGE IP
 
 assign wIP = (rBranchTaken) ? wIPInitialValue : wIP_temp;
 
-FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FFD1 
+FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FFD1
 (
 	.Clock(Clock),
 	.Reset(Reset),
@@ -304,7 +304,7 @@ begin
 		rSave <= 1'b1;
 		rRET <= 1'b0;
 	end
-	//-------------------------------------	
+	//-------------------------------------
 	`JMP:
 	begin
 		rFFLedEN     <= 1'b0;
@@ -316,7 +316,7 @@ begin
 		rSave <= 1'b1;
 		rRET <= 1'b0;
 	end
-	//-------------------------------------	
+	//-------------------------------------
 	`LED:
 	begin
 		rFFLedEN     <= 1'b1;
@@ -416,7 +416,7 @@ begin
 	//-------------------------------------
 /*	`LCD:
 	begin
-		//cuando la parte 1 este lista acá se va a implementar la 2
+		//
 	end  */
 	//-------------------------------------
 	default:
@@ -429,9 +429,9 @@ begin
 		rBranchTaken <= 1'b0;
 		rSave <= 1'b1;
 		rRET <= 1'b0;
-	end	
-	//-------------------------------------	
-	endcase	
+	end
+	//-------------------------------------
+	endcase
 end
 
 
