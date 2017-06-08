@@ -48,19 +48,19 @@ module Module_LCD_Control (
          input wire Clock,
          input wire Reset,
          input wire wWrite,
-         input wire [7 : 0] wData,
+         input wire [7:0] wData,
          output reg wReady,
          output reg oLCD_Enabled,
          output reg oLCD_RegisterSelect,//0=Command, 1=Data
          output wire oLCD_StrataFlashControl,
          output wire oLCD_ReadWrite,
-         output reg [3 : 0] oLCD_Data
+         output reg [3:0] oLCD_Data
        );
 
-assign oLCD_ReadWrite = 0;             // I only Write to the LCD display, never Read from it
-assign oLCD_StrataFlashControl = 1;    // Strata Flash dis abled. Ful l read /write access to LCD
-reg [7  : 0] rCurrentState, rNextState;
-reg [31 : 0] rTimeCount;
+assign oLCD_ReadWrite = 0;           // I only Write to the LCD display, never Read from it
+assign oLCD_StrataFlashControl = 1;  // Strata Flash dis abled. Ful l read /write access to LCD
+reg [7 :0] rCurrentState, rNextState;
+reg [31:0] rTimeCount;
 reg rTimeCountReset;
 
 //
