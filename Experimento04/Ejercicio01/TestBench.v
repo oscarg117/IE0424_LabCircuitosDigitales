@@ -1,4 +1,3 @@
-
 `timescale 1ns / 1ps
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -30,23 +29,29 @@ reg Clock;
 reg Reset;
 
 // Outputs
-wire [7: 0] oLed;
-wire oLCD_Enabled;
-wire oLCD_RegisterSelect;
-wire oLCD_StrataFlashControl;
-wire oLCD_ReadWrite;
-wire	[3: 0] oLCD_Data;
+wire oVGA_R;
+wire oVGA_G;
+wire oVGA_B;
+wire oH_sync;
+wire oV_sync;
 
 // Instantiate the Unit Under Test (UUT)
+// MiniAlu uut (
+//           .Clock(Clock),
+//           .Reset(Reset),
+//           .oLed(oLed)
+//         );
+
 MiniAlu uut (
           .Clock(Clock),
           .Reset(Reset),
-          .oLed(oLed),
-          .oLCD_Enabled(oLCD_Enabled),
-          .oLCD_RegisterSelect(oLCD_RegisterSelect),
-          .oLCD_StrataFlashControl(oLCD_StrataFlashControl),
-          .oLCD_ReadWrite(oLCD_ReadWrite),
-          .oLCD_Data(oLCD_Data)
+//          .PS2_CLK(PS2_CLK),
+//          .PS2_DATA(PS2_DATA),
+          .VGA_RED(oVGA_R),
+          .VGA_GREEN(oVGA_G),
+          .VGA_BLUE(oVGA_B),
+          .VGA_HSYNC(oH_sync),
+          .VGA_VSYNC(oV_sync)
         );
 
 always
@@ -72,5 +77,3 @@ initial
   end
 
 endmodule
-
-
