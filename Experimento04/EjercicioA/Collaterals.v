@@ -135,13 +135,18 @@ assign iVGA_G = iVGA_RGB[1];
 assign iVGA_B = iVGA_RGB[0];
 assign oVGA_RGB = {oVGA_R, oVGA_G, oVGA_B};
 
-assign oHsync = (oHcounter < 704) ? 1'b1 : 1'b0;
-assign wEndline = (oHcounter == 799);
-assign oVsync = (oVcounter < 528) ? 1'b1 : 1'b0;
+// assign oHsync = (oHcounter < 704) ? 1'b1 : 1'b0;
+// assign wEndline = (oHcounter == 799);
+// assign oVsync = (oVcounter < 528) ? 1'b1 : 1'b0;
+
+assign oHsync = (oHcounter < 640) ? 1'b1 : 1'b0;
+assign wEndline = (oHcounter == 639);
+assign oVsync = (oVcounter < 480) ? 1'b1 : 1'b0;
+
 
 // Marco negro e imagen de 480*640
 assign {oVGA_R, oVGA_G, oVGA_B} = (oVcounter < 100 || oVcounter >= 380 ||
-                                   oHcounter < 100 || oHcounter > 420) ?
+                                   oHcounter < 100 || oHcounter > 540) ?
        //wMarco : wVGAOutputSelection;
        wMarco : wCuadro;
 

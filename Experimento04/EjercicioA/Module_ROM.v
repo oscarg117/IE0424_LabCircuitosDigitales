@@ -8,8 +8,6 @@
 `define WhiteWhite 8'd52
 `define WhiteBlack 8'd57
 
-`define `SUB_VGA 8'd17
-
 module ROM
        (
          input wire[15: 0] iAddress,
