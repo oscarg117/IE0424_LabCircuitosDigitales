@@ -73,8 +73,8 @@ wire [3: 0] wCuadro;
 wire [2: 0] wVGAOutputSelection;
 reg [9: 0] puntero1, puntero2;
 reg [23: 0] contador1, contador2;
-assign wMarco = 3'b000;
-assign wCuadro = 3'b100;
+assign wMarco  = 3'b100;
+assign wCuadro = 3'b001;
 
 initial
   begin
@@ -112,21 +112,43 @@ always @ (posedge Clock_lento )
 
 assign wVGAOutputSelection = (
          (((oHcounter >= iXRedCounter + 10'd272) && (oHcounter <= iXRedCounter + 10'd272 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd333) && (oVcounter <= iYRedCounter + 10'd333 + 10'd31))) ||
+          ((oVcounter >= iYRedCounter + 10'd333) && (oVcounter <= iYRedCounter + 10'd333 + 10'd31)))
+
+          ||
+
          (((oHcounter >= iXRedCounter + 10'd272) && (oHcounter <= iXRedCounter + 10'd272 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd397) && (oVcounter <= iYRedCounter + 10'd397 + 10'd31))) ||
+          ((oVcounter >= iYRedCounter + 10'd397) && (oVcounter <= iYRedCounter + 10'd397 + 10'd31)))
+
+          ||
+
          (((oHcounter >= iXRedCounter + 10'd240) && (oHcounter <= iXRedCounter + 10'd240 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd429) && (oVcounter <= iYRedCounter + 10'd429 + 10'd31))) ||
+          ((oVcounter >= iYRedCounter + 10'd429) && (oVcounter <= iYRedCounter + 10'd429 + 10'd31)))
+
+          ||
+
          (((oHcounter >= iXRedCounter + 10'd240) && (oHcounter <= iXRedCounter + 10'd240 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd365) && (oVcounter <= iYRedCounter + 10'd365 + 10'd31))) ||
+          ((oVcounter >= iYRedCounter + 10'd365) && (oVcounter <= iYRedCounter + 10'd365 + 10'd31)))
+
+          ||
+
          (((oHcounter >= iXRedCounter + 10'd304) && (oHcounter <= iXRedCounter + 10'd304 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd365) && (oVcounter <= iYRedCounter + 10'd365 + 10'd31))) ||
+          ((oVcounter >= iYRedCounter + 10'd365) && (oVcounter <= iYRedCounter + 10'd365 + 10'd31)))
+
+          ||
+
          (((oHcounter >= iXRedCounter + 10'd304) && (oHcounter <= iXRedCounter + 10'd304 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd429) && (oVcounter <= iYRedCounter + 10'd429 + 10'd31))) ||
+          ((oVcounter >= iYRedCounter + 10'd429) && (oVcounter <= iYRedCounter + 10'd429 + 10'd31)))
+
+          ||
+
          (((oHcounter >= 10'd272) && (oHcounter <= 10'd272 + 10'd31)) &&
-          ((oVcounter >= 10'd77 + puntero1) && (oVcounter <= 10'd77 + puntero1 + 10'd31))) ||
+          ((oVcounter >= 10'd77 + puntero1) && (oVcounter <= 10'd77 + puntero1 + 10'd31)))
+
+          ||
+
          (((oHcounter >= 10'd368) && (oHcounter <= 10'd368 + 10'd31)) &&
           ((oVcounter >= 10'd77 + puntero2) && (oVcounter <= 10'd77 + puntero2 + 10'd31)))
+
        ) ? iColorCuadro : {iVGA_R, iVGA_G, iVGA_B}; //Cuadro central
 
 
@@ -144,11 +166,17 @@ assign wEndline = (oHcounter == 639);
 assign oVsync = (oVcounter < 480) ? 1'b1 : 1'b0;
 
 
-// Marco negro e imagen de 480*640
+// // Marco negro e imagen de 320*384
+// assign {oVGA_R, oVGA_G, oVGA_B} = (oVcounter < 77 || oVcounter >= 461 ||
+//                                    oHcounter < 208 || oHcounter > 464) ?
+//        wMarco : wVGAOutputSelection;
+
+// Marco negro e imagen de 480*640 320*384
 assign {oVGA_R, oVGA_G, oVGA_B} = (oVcounter < 100 || oVcounter >= 380 ||
                                    oHcounter < 100 || oHcounter > 540) ?
        //wMarco : wVGAOutputSelection;
        wMarco : wCuadro;
+       //wCuadro : wMarco;
 
 UPCOUNTER_POSEDGE # (10) HORIZONTAL_COUNTER
                   (
