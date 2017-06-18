@@ -12,11 +12,10 @@
 `define ADD   4'd5
 `define JMP   4'd6
 `define SUB   4'd7
-`define SMUL  4'd8
-`define CALL  4'd9
-`define RET   4'd10
-`define VGA   4'd11
-`define INC   4'd12
+`define CALL  4'd8
+`define RET   4'd9
+`define VGA   4'd10
+`define INC   4'd11
 
 
 `define R0 8'd0
@@ -36,6 +35,7 @@
 `define R14 8'd14
 `define R15 8'd15
 
+//Colores en 8 bits
 `define COLOR_BLACK   8'b00000000
 `define COLOR_BLUE    8'b00000001
 `define COLOR_GREEN   8'b00000010
@@ -44,5 +44,15 @@
 `define COLOR_MAGENTA 8'b00000101
 `define COLOR_YELLOW  8'b00000110
 `define COLOR_WHITE   8'b00000111
+
+//Colores en 3 bits
+`define BLACK   3'b000
+`define BLUE    3'b001
+`define GREEN   3'b010
+`define CYAN    3'b011
+`define RED     3'b100
+`define MAGENTA 3'b101
+`define YELLOW  3'b110
+`define WHITE   3'b111
 
 `endif

@@ -1,6 +1,25 @@
-
 `timescale 1ns / 1ps
 `include "Defintions.v"
+
+`ifndef SYNC_CONSTS
+`define SYNC_CONSTS
+
+`define HS_Ts     800
+`define HS_Tdisp  640
+`define HS_Tpw    96
+`define HS_Tfp    16
+`define HS_Tbp    48
+
+`define VS_lines_Ts     521
+`define VS_lines_Tdisp  480
+`define VS_lines_Tpw    2
+`define VS_lines_Tfp    10
+`define VS_lines_Tbp    29
+
+`define V_OFFSET        100
+`define H_OFFSET        100
+
+`endif
 
 
 module MiniAlu
@@ -28,14 +47,18 @@ wire wVGA_R, wVGA_G, wVGA_B;
 
 wire [9: 0] wH_counter, wV_counter;
 wire [7: 0] wH_read, wV_read;
-assign wH_read = (wH_counter >= 208 && wH_counter <= 528) ? (wH_counter - 208) : 8'd0;
-assign wV_read = (wV_counter >= 77 && wV_counter <= 461) ? (wV_counter - 77) : 8'd0;
+assign wH_read = (  wH_counter >= `HS_Tbp+`H_OFFSET &&
+                    wH_counter <= `VS_lines_Ts - `VS_lines_Tpw) ?
+                    (wH_counter - `HS_Tbp+`H_OFFSET) : 8'd0;
+assign wV_read = (  wV_counter >= `VS_lines_Tbp+`V_OFFSET &&
+                    wV_counter <= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET) ?
+                    (wV_counter - `VS_lines_Tbp+`V_OFFSET) : 8'd0;
 
 reg rRetCall;
 reg [7: 0] rDirectionBuffer;
 wire [7: 0] wRetCall;
 wire [9: 0] wXRedCounter, wYRedCounter;
-wire [3: 0] HolyCow;
+wire [2: 0] HolyCow;
 
 // Definición del clock de 25 MHz
 wire Clock_lento; // Clock con frecuencia de 25 MHz
@@ -113,7 +136,7 @@ ROM InstructionRom
       .oInstruction( wInstruction )
     );
 
-
+                             //(384*320)-1
 RAM_SINGLE_READ_PORT # (3, 16, 122879) VideoMemory
                      (
                        .Clock(Clock),
@@ -196,15 +219,6 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD4
                              );
 
 
-// reg rFFLedEN;
-// FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FF_LEDS
-//                              (
-//                                .Clock(Clock),
-//                                .Reset(Reset),
-//                                .Enable( rFFLedEN ),
-//                                .D( wSourceData1[7: 0] ),
-//                                .Q( oLed )
-//                              );
 
 assign wImmediateValue = {wSourceAddr1, wSourceAddr0};
 assign wResultTotal = {rResultHI, rResult};

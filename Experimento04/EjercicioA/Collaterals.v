@@ -1,4 +1,25 @@
 `timescale 1ns / 1ps
+
+`ifndef SYNC_CONSTS
+`define SYNC_CONSTS
+
+`define HS_Ts     800
+`define HS_Tdisp  640
+`define HS_Tpw    96
+`define HS_Tfp    16
+`define HS_Tbp    48
+
+`define VS_lines_Ts     521
+`define VS_lines_Tdisp  480
+`define VS_lines_Tpw    2
+`define VS_lines_Tfp    10
+`define VS_lines_Tbp    29
+
+`define V_OFFSET        100
+`define H_OFFSET        100
+
+`endif
+
 //------------------------------------------------
 module UPCOUNTER_POSEDGE # (parameter SIZE = 16)
        (
@@ -73,8 +94,23 @@ wire [3: 0] wCuadro;
 wire [2: 0] wVGAOutputSelection;
 reg [9: 0] puntero1, puntero2;
 reg [23: 0] contador1, contador2;
-assign wMarco  = 3'b100;
-assign wCuadro = 3'b001;
+
+assign wMarco  = 3'b000;
+//assign wCuadro = (oVcounter[5] && oHcounter[5]) ? 3'b010 : 3'b001;//3'b001;
+// assign wCuadro = (  (oVcounter >= 0   && oVcounter <= 10 ) ||
+//                     (oVcounter >= 100 && oVcounter <= 110) ||
+//                     (oVcounter >= 200 && oVcounter <= 210) ||
+//                     (oVcounter >= 300 && oVcounter <= 310) ||
+//                     (oVcounter >= 400 && oVcounter <= 410) ||
+//                     (oVcounter >= 500 && oVcounter <= 510) ||
+//                     (oVcounter >= 520 && oVcounter <= 610) ||
+//                     (oHcounter >= 790 && oHcounter <= 800)   )
+//                       ? 3'b000 : 3'b001;//3'b001;
+assign wCuadro = (  ( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
+                      oVcounter <= `VS_lines_Tbp+`V_OFFSET+70 ) ||
+                    (oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
+                      oVcounter <= `VS_lines_Tbp+`V_OFFSET+210 )  )
+                        ? 3'b010 : 3'b001;
 
 initial
   begin
@@ -86,14 +122,14 @@ initial
 
 always @ (posedge Clock_lento )
   begin
-    if (contador1 >= 23'd45000000)
+    if (contador1 >= 23'd45000000)//3056960/25M ~0,1222784s
       begin
         puntero1 <= puntero1 + 10'd32;
         puntero2 <= puntero2;
         contador1 <= 24'b0;
         contador2 <= contador2;
       end
-    else if (contador2 >= 23'd40000000)
+    else if (contador2 >= 23'd40000000)//6445568/25M ~0,25782272s
       begin
         puntero2 <= puntero2 + 10'd32;
         puntero1 <= puntero1;
@@ -157,31 +193,34 @@ assign iVGA_G = iVGA_RGB[1];
 assign iVGA_B = iVGA_RGB[0];
 assign oVGA_RGB = {oVGA_R, oVGA_G, oVGA_B};
 
-// assign oHsync = (oHcounter < 704) ? 1'b1 : 1'b0;
-// assign wEndline = (oHcounter == 799);
-// assign oVsync = (oVcounter < 528) ? 1'b1 : 1'b0;
-
-assign oHsync = (oHcounter < 640) ? 1'b1 : 1'b0;
-assign wEndline = (oHcounter == 639);
-assign oVsync = (oVcounter < 480) ? 1'b1 : 1'b0;
+assign oHsync = (oHcounter < `HS_Ts - `HS_Tpw) ? 1'b1 : 1'b0;
+assign wEndline = (oHcounter == `HS_Ts - 1);
+assign oVsync = (oVcounter < `VS_lines_Ts - `VS_lines_Tpw) ? 1'b1 : 1'b0;
 
 
 // // Marco negro e imagen de 320*384
-// assign {oVGA_R, oVGA_G, oVGA_B} = (oVcounter < 77 || oVcounter >= 461 ||
-//                                    oHcounter < 208 || oHcounter > 464) ?
-//        wMarco : wVGAOutputSelection;
+assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < `VS_lines_Tbp+`V_OFFSET  ||
+                                    oVcounter >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET ||
+                                    oHcounter < `HS_Tbp+`H_OFFSET ||
+                                    oHcounter > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
+                                    ? wMarco : wCuadro;
+
+//                                      wMarco : wVGAOutputSelection;
+// assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < 100 || oVcounter >= `VS_lines_Ts - 100 ||
+//                                     oHcounter < 100 || oHcounter > `HS_Ts - 100    )  ?
+//                                     wMarco : wCuadro;
 
 // Marco negro e imagen de 480*640 320*384
-assign {oVGA_R, oVGA_G, oVGA_B} = (oVcounter < 100 || oVcounter >= 380 ||
-                                   oHcounter < 100 || oHcounter > 540) ?
-       //wMarco : wVGAOutputSelection;
-       wMarco : wCuadro;
-       //wCuadro : wMarco;
+// assign {oVGA_R, oVGA_G, oVGA_B} = (oVcounter < 100 || oVcounter >= 380 ||
+//                                    oHcounter < 100 || oHcounter > 540) ?
+//        //wMarco : wVGAOutputSelection;
+//        wMarco : wCuadro;
+//        //wCuadro : wMarco;
 
 UPCOUNTER_POSEDGE # (10) HORIZONTAL_COUNTER
                   (
                     .Clock	( Clock_lento ),
-                    .Reset	( (oHcounter > 799) || Reset ),
+                    .Reset	( (oHcounter > `HS_Ts-1) || Reset ),
                     .Initial	( 10'b0 ),
                     .Enable	( 1'b1	),
                     .Q	(	oHcounter )
@@ -190,7 +229,7 @@ UPCOUNTER_POSEDGE # (10) HORIZONTAL_COUNTER
 UPCOUNTER_POSEDGE # (10) VERTICAL_COUNTER
                   (
                     .Clock	( Clock_lento ),
-                    .Reset	( (oVcounter > 528) || Reset ),
+                    .Reset	( (oVcounter > `VS_lines_Ts-1) || Reset ),
                     .Initial	( 10'b0 ),
                     .Enable	( wEndline ),
                     .Q	( oVcounter )
