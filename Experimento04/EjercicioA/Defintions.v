@@ -16,6 +16,7 @@
 `define RET   4'd9
 `define VGA   4'd10
 `define INC   4'd11
+`define MOV   4'd12
 
 
 `define R0 8'd0

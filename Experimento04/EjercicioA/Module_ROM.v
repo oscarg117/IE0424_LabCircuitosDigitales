@@ -1,15 +1,14 @@
 `timescale 1ns / 1ps
 `include "Defintions.v"
 
-`define LOOP1 8'd9
-`define LOOP2 8'd6
-
-`define SaveWhite 8'd50
+`define SaveWhite  8'd50
 `define WhiteWhite 8'd52
 `define WhiteBlack 8'd57
 
-`define SUB_VGA 8'd17
-`define S_PIX   16'd16
+`define THE_END    8'd25
+`define DRAW_SQR   8'd27
+`define RGB2RAM    8'd28
+
 
 module ROM
        (
@@ -19,27 +18,57 @@ module ROM
 always @ ( iAddress )
   begin
     case (iAddress)
+/****************************************************************/
+/*--------------------------------------------------------------*/
 
-      // 0: oInstruction = { `NOP, 24'd4000 };
-      // 1: oInstruction = { `STO, `R7, 16'd1	};
-      // 2: oInstruction = { `STO, `R6, 16'd1	};
-      // 3: oInstruction = { `STO, `R3, 16'd1	};
-      // 4: oInstruction = { `STO, `R4, 16'd45000	}; //1000
-      // 5: oInstruction = { `STO, `R5, 16'd0	};  //j
-      // //LOOP2:
-      // 6: oInstruction = { `LED, 8'b0, `R7, 8'b0	};
-      // 7: oInstruction = { `STO, `R1, 16'h0	};
-      // 8: oInstruction = { `STO, `R2, 16'd65000	}; //65000
-      // //LOOP1:
-      // 9: oInstruction = { `ADD, `R1, `R1, `R3	};
-      // 10: oInstruction = { `BLE, `LOOP1, `R1, `R2	};
-      //
-      // 11: oInstruction = { `ADD, `R5, `R5, `R3	};
-      // 12: oInstruction = { `BLE, `LOOP2, `R5, `R4	};
-      // 13: oInstruction = { `NOP, 24'd4000	};
-      // 14: oInstruction = { `ADD, `R7, `R7, `R3	};
-      // //	14: oInstruction = { `SMUL,	`R7,`R7,`R6		};
-      // 15: oInstruction = { `JMP, 8'd3, 16'b0	};
+0    : oInstruction = { `NOP , 24'd4000 };
+
+1    : oInstruction = { `STO , `R14, 16'd0};               //R14=xi
+2    : oInstruction = { `STO , `R15, 16'd0};               //R15=yi
+3    : oInstruction = { `STO , `R12, 16'd79};              //R12=xf
+4    : oInstruction = { `STO , `R13, 16'd14};              //R13=yf
+5    : oInstruction = { `STO , `R11, `COLOR_GREEN, 8'd0};  //R11=COLOR_GREEN
+6    : oInstruction = { `CALL , `DRAW_SQR, 16'd0 };        //Dibuja un cuadro
+
+7    : oInstruction = { `STO , `R14, 16'd0};               //R14=xi
+8    : oInstruction = { `STO , `R15, 16'd15};              //R15=yi
+9    : oInstruction = { `STO , `R12, 16'd79};              //R12=xf
+10   : oInstruction = { `STO , `R13, 16'd29};              //R13=yf
+11   : oInstruction = { `STO , `R11, `COLOR_RED, 8'd0};    //R11=COLOR_RED
+12   : oInstruction = { `CALL , `DRAW_SQR, 16'd0 };        //Dibuja un cuadro
+
+13   : oInstruction = { `STO , `R14, 16'd0};               //R14=xi
+14   : oInstruction = { `STO , `R15, 16'd30};              //R15=yi
+15   : oInstruction = { `STO , `R12, 16'd79};              //R12=xf
+16   : oInstruction = { `STO , `R13, 16'd44};              //R13=yf
+17   : oInstruction = { `STO , `R11, `COLOR_MAGENTA, 8'd0};//R11=COLOR_MAGENTA
+18   : oInstruction = { `CALL , `DRAW_SQR, 16'd0 };        //Dibuja un cuadro
+
+19   : oInstruction = { `STO , `R14, 16'd0};               //R14=xi
+20   : oInstruction = { `STO , `R15, 16'd45};              //R15=yi
+21   : oInstruction = { `STO , `R12, 16'd79};              //R12=xf
+22   : oInstruction = { `STO , `R13, 16'd59};              //R13=yf
+23   : oInstruction = { `STO , `R11, `COLOR_BLUE, 8'd0};   //R11=COLOR_BLUE
+24   : oInstruction = { `CALL , `DRAW_SQR, 16'd0 };        //Dibuja un cuadro
+
+
+//THE_END
+25   : oInstruction = { `NOP , 24'd4000      };
+26   : oInstruction = { `JMP , `THE_END, 16'b0   };
+
+
+//DRAW_SQR
+27   : oInstruction = { `MOV , `R10, `R14, 8'd0};          //x0=xi
+//RGB2RAM
+28   : oInstruction = { `VGA , `R11, `R10, `R15};         //Pixel {x0,yi} a RAM
+29   : oInstruction = { `INC , `R10, `R10, 8'd0};          //x0++
+30   : oInstruction = { `BLE , `RGB2RAM, `R10, `R12};      //Salta si x0<=xf
+31   : oInstruction = { `INC , `R15, `R15, 8'd0};          //yi++
+32   : oInstruction = { `BLE , `DRAW_SQR, `R15, `R13};     //Salta si yi<=yf
+33   : oInstruction = { `RET , 24'd0 };                    //Vuelve al programa
+
+/*--------------------------------------------------------------*/
+/****************************************************************/
 
 /****************************************************************/
 /****************************************************************/
@@ -142,46 +171,9 @@ always @ ( iAddress )
 /****************************************************************/
 /****************************************************************/
 
-/****************************************************************/
-/****************************************************************/
-
-0: oInstruction = { `NOP ,24'd4000 };
-1: oInstruction = { `STO ,`R2, 16'h0001};
-
-2: oInstruction = { `STO ,`R1, 16'h0000};
-// Loop green
-3: oInstruction = { `STO ,`R3, 16'd599 };
-4: oInstruction = { `STO ,`R4, 8'b0, `COLOR_GREEN};
-5: oInstruction = { `CALL ,`SUB_VGA, 16'h0000 };
-// Loop red
-6: oInstruction = { `STO ,`R3, 16'd1199 };
-7: oInstruction = { `STO ,`R4, 8'b0, `COLOR_RED};
-8: oInstruction = { `CALL ,`SUB_VGA, 16'h0000 };
-// Loop magenta
-9: oInstruction = { `STO ,`R3, 16'd1799 };
-10: oInstruction = { `STO ,`R4, 8'b0, `COLOR_MAGENTA};
-11: oInstruction = { `CALL ,`SUB_VGA, 16'h0000 };
-
-// Loop blue
-12: oInstruction = { `STO ,`R3, 16'd2399 };
-13: oInstruction = { `STO ,`R4, 8'b0, `COLOR_BLUE};
-14: oInstruction = { `CALL ,`SUB_VGA, 16'h0000 };
-
-15: oInstruction = { `NOP , 24'd4000      };
-16: oInstruction = { `JMP , 8'd15, 16'b0   };
-
-// Subrutina que escribe el color en R4 a las posiciones de
-// la memoria de video [R1 - R3], R2 debe ser 1
-17: oInstruction = { `VGA ,`R4,8'd0,`R1};
-18: oInstruction = { `ADD ,`R1,`R1,`R2};
-19: oInstruction = { `BLE , 8'd17,`R1,`R3  };
-20: oInstruction = { `RET , 24'd0 };
-
-/****************************************************************/
-/****************************************************************/
 
       default:
-        oInstruction = { `NOP , 24'd4000	};		//NOP
+        oInstruction = { `NOP , 24'd0	};		//NOP
     endcase
   end
 

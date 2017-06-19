@@ -62,6 +62,10 @@ always
 
 initial
   begin
+
+    // $dumpfile("test.vcd");
+    // $dumpvars;
+
     // Initialize Inputs
     Clock = 0;
     Reset = 0;

@@ -46,15 +46,25 @@ reg rVGAWriteEnable;
 wire wVGA_R, wVGA_G, wVGA_B;
 
 wire [9: 0] wH_counter, wV_counter;
-wire [7: 0] wH_read, wV_read;
-assign wH_read = (  wH_counter >= `HS_Tbp+`H_OFFSET &&
-                    wH_counter <= `VS_lines_Ts - `VS_lines_Tpw) ?
-                      (wH_counter - `HS_Tbp+`H_OFFSET) : 8'd0;
-assign wV_read = (  wV_counter >= `VS_lines_Tbp+`V_OFFSET &&
-                    wV_counter <= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET) ?
-                      (wV_counter - `VS_lines_Tbp+`V_OFFSET) : 8'd0;
+wire [9: 0] wH_read, wV_read;
 
-reg rRetCall; 
+assign wH_read = (  wH_counter >= `HS_Tbp &&
+                    wH_counter < `HS_Ts - `HS_Tpw - `HS_Tfp) ?
+                      (wH_counter - `HS_Tbp) : 10'd0;
+
+assign wV_read = (  wV_counter >= `VS_lines_Tbp &&
+                    wV_counter < `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp) ?
+                      (wV_counter - `VS_lines_Tbp) : 10'd0;
+
+/* */
+// assign wH_read = (  wH_counter >= `HS_Tbp+`H_OFFSET &&
+//                     wH_counter <= `VS_lines_Ts - `VS_lines_Tpw) ?
+//                       (wH_counter - `HS_Tbp+`H_OFFSET) : 8'd0;
+// assign wV_read = (  wV_counter >= `VS_lines_Tbp+`V_OFFSET &&
+//                     wV_counter <= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET) ?
+//                       (wV_counter - `VS_lines_Tbp+`V_OFFSET) : 8'd0;
+
+reg rRetCall;
 reg [7: 0] rDirectionBuffer;
 wire [7: 0] wRetCall;
 wire [9: 0] wXRedCounter, wYRedCounter;
@@ -136,13 +146,13 @@ ROM InstructionRom
       .oInstruction( wInstruction )
     );
 
-                             //(384*320)-1 = 122879
-RAM_SINGLE_READ_PORT # (3, 12, 60*40) VideoMemory
+
+RAM_SINGLE_READ_PORT # (3, 13, 80*60) VideoMemory
                      (
                        .Clock(Clock),
                        .iWriteEnable( rVGAWriteEnable ),
-                       .iReadAddress( {wH_read[7:2], wV_read[7:2]} ),  // Columna, fila
-                       .iWriteAddress( {wSourceData1, wSourceData0} ),  // Columna, fila
+                       .iReadAddress( {wH_read[9:3], wV_read[9:4]} ),  // Columna, fila
+                       .iWriteAddress( {wSourceData1[6:0], wSourceData0[5:0]} ),  // Columna, fila
                        .iDataIn(wDestination[2:0]),
                        .oDataOut( {wVGA_R, wVGA_G, wVGA_B} )
                      );
@@ -171,6 +181,10 @@ assign wRetCall = (rRetCall) ? rDirectionBuffer : wDestination;
 
 //assign wIPInitialValue = (Reset) ? 8'b0 : wDestination;
 
+initial
+  begin
+		 $monitor("t=%3d VGA_WEn=%d RET=%d \n",$time,rVGAWriteEnable, rRetCall);
+  end
 
 UPCOUNTER_POSEDGE IP
                   (
@@ -183,7 +197,7 @@ UPCOUNTER_POSEDGE IP
 //assign wIP = (rBranchTaken) ? wIPInitialValue : wIP_temp;
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FFD1
-                             (
+                             (                //Instruccion
                                .Clock(Clock),
                                .Reset(Reset),
                                .Enable(1'b1),
@@ -192,7 +206,7 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FFD1
                              );
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD2
-                             (
+                             (                //Registro 0 (Der)
                                .Clock(Clock),
                                .Reset(Reset),
                                .Enable(1'b1),
@@ -201,7 +215,7 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD2
                              );
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD3
-                             (
+                             (                //Registro 1 (Centro)
                                .Clock(Clock),
                                .Reset(Reset),
                                .Enable(1'b1),
@@ -210,7 +224,7 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD3
                              );
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD4
-                             (
+                             (                //Registro destino (Izq)
                                .Clock(Clock),
                                .Reset(Reset),
                                .Enable(1'b1),
@@ -355,6 +369,16 @@ always @ ( * )
             rVGAWriteEnable <= 1'b0;
             rRetCall <= 1'b0;
           end
+
+          //-------------------------------------
+          `MOV:
+            begin
+              rBranchTaken <= 1'b0;
+              rWriteEnable <= 1'b1;
+              {rResultHI, rResult} <= wSourceData1;
+              rVGAWriteEnable <= 1'b0;
+              rRetCall <= 1'b0;
+            end
       //-------------------------------------
       default:
         begin
