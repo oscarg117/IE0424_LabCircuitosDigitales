@@ -49,12 +49,12 @@ wire [9: 0] wH_counter, wV_counter;
 wire [7: 0] wH_read, wV_read;
 assign wH_read = (  wH_counter >= `HS_Tbp+`H_OFFSET &&
                     wH_counter <= `VS_lines_Ts - `VS_lines_Tpw) ?
-                    (wH_counter - `HS_Tbp+`H_OFFSET) : 8'd0;
+                      (wH_counter - `HS_Tbp+`H_OFFSET) : 8'd0;
 assign wV_read = (  wV_counter >= `VS_lines_Tbp+`V_OFFSET &&
                     wV_counter <= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET) ?
-                    (wV_counter - `VS_lines_Tbp+`V_OFFSET) : 8'd0;
+                      (wV_counter - `VS_lines_Tbp+`V_OFFSET) : 8'd0;
 
-reg rRetCall;
+reg rRetCall; 
 reg [7: 0] rDirectionBuffer;
 wire [7: 0] wRetCall;
 wire [9: 0] wXRedCounter, wYRedCounter;
@@ -136,14 +136,14 @@ ROM InstructionRom
       .oInstruction( wInstruction )
     );
 
-                             //(384*320)-1
-RAM_SINGLE_READ_PORT # (3, 16, 122879) VideoMemory
+                             //(384*320)-1 = 122879
+RAM_SINGLE_READ_PORT # (3, 12, 60*40) VideoMemory
                      (
                        .Clock(Clock),
                        .iWriteEnable( rVGAWriteEnable ),
-                       .iReadAddress( {wH_read, wV_read} ),  // Columna, fila
-                       .iWriteAddress( {wSourceData1[7: 0], wSourceData0[7: 0]} ),  // Columna, fila
-                       .iDataIn(wDestination[2: 0]),
+                       .iReadAddress( {wH_read[7:2], wV_read[7:2]} ),  // Columna, fila
+                       .iWriteAddress( {wSourceData1, wSourceData0} ),  // Columna, fila
+                       .iDataIn(wDestination[2:0]),
                        .oDataOut( {wVGA_R, wVGA_G, wVGA_B} )
                      );
 

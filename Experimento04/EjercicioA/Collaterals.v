@@ -1,5 +1,7 @@
 `timescale 1ns / 1ps
 
+`include "Defintions.v"
+
 `ifndef SYNC_CONSTS
 `define SYNC_CONSTS
 
@@ -95,7 +97,7 @@ wire [2: 0] wVGAOutputSelection;
 reg [9: 0] puntero1, puntero2;
 reg [23: 0] contador1, contador2;
 
-assign wMarco  = 3'b000;
+assign wMarco  = `RED;//3'b000;
 //assign wCuadro = (oVcounter[5] && oHcounter[5]) ? 3'b010 : 3'b001;//3'b001;
 // assign wCuadro = (  (oVcounter >= 0   && oVcounter <= 10 ) ||
 //                     (oVcounter >= 100 && oVcounter <= 110) ||
@@ -110,7 +112,7 @@ assign wCuadro = (  ( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
                       oVcounter <= `VS_lines_Tbp+`V_OFFSET+70 ) ||
                     (oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
                       oVcounter <= `VS_lines_Tbp+`V_OFFSET+210 )  )
-                        ? 3'b010 : 3'b001;
+                        ? `GREEN : `BLUE;
 
 initial
   begin
@@ -198,24 +200,15 @@ assign wEndline = (oHcounter == `HS_Ts - 1);
 assign oVsync = (oVcounter < `VS_lines_Ts - `VS_lines_Tpw) ? 1'b1 : 1'b0;
 
 
-// // Marco negro e imagen de 320*384
-assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < `VS_lines_Tbp+`V_OFFSET  ||
-                                    oVcounter >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET ||
-                                    oHcounter < `HS_Tbp+`H_OFFSET ||
-                                    oHcounter > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
-                                    ? wMarco : wCuadro;
+// Marco negro de 440*280
+// assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < `VS_lines_Tbp+`V_OFFSET  ||
+//                                     oVcounter >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET ||
+//                                     oHcounter < `HS_Tbp+`H_OFFSET ||
+//                                     oHcounter > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
+//                                     ? wMarco : wCuadro;
 
-//                                      wMarco : wVGAOutputSelection;
-// assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < 100 || oVcounter >= `VS_lines_Ts - 100 ||
-//                                     oHcounter < 100 || oHcounter > `HS_Ts - 100    )  ?
-//                                     wMarco : wCuadro;
+assign {oVGA_R, oVGA_G, oVGA_B} = iVGA_RGB;
 
-// Marco negro e imagen de 480*640 320*384
-// assign {oVGA_R, oVGA_G, oVGA_B} = (oVcounter < 100 || oVcounter >= 380 ||
-//                                    oHcounter < 100 || oHcounter > 540) ?
-//        //wMarco : wVGAOutputSelection;
-//        wMarco : wCuadro;
-//        //wCuadro : wMarco;
 
 UPCOUNTER_POSEDGE # (10) HORIZONTAL_COUNTER
                   (
