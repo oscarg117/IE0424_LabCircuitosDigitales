@@ -98,16 +98,7 @@ reg [9: 0] puntero1, puntero2;
 reg [23: 0] contador1, contador2;
 
 assign wMarco  = `RED;//3'b000;
-//assign wCuadro = (oVcounter[5] && oHcounter[5]) ? 3'b010 : 3'b001;//3'b001;
-// assign wCuadro = (  (oVcounter >= 0   && oVcounter <= 10 ) ||
-//                     (oVcounter >= 100 && oVcounter <= 110) ||
-//                     (oVcounter >= 200 && oVcounter <= 210) ||
-//                     (oVcounter >= 300 && oVcounter <= 310) ||
-//                     (oVcounter >= 400 && oVcounter <= 410) ||
-//                     (oVcounter >= 500 && oVcounter <= 510) ||
-//                     (oVcounter >= 520 && oVcounter <= 610) ||
-//                     (oHcounter >= 790 && oHcounter <= 800)   )
-//                       ? 3'b000 : 3'b001;//3'b001;
+
 assign wCuadro = (  ( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
                       oVcounter <= `VS_lines_Tbp+`V_OFFSET+70 ) ||
                     (oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
@@ -201,13 +192,13 @@ assign oVsync = (oVcounter < `VS_lines_Ts - `VS_lines_Tpw) ? 1'b1 : 1'b0;
 
 
 // Marco negro de 440*280
-// assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < `VS_lines_Tbp+`V_OFFSET  ||
-//                                     oVcounter >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET ||
-//                                     oHcounter < `HS_Tbp+`H_OFFSET ||
-//                                     oHcounter > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
-//                                     ? wMarco : wCuadro;
+assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < `VS_lines_Tbp+`V_OFFSET  ||
+                                    oVcounter >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET ||
+                                    oHcounter < `HS_Tbp+`H_OFFSET ||
+                                    oHcounter > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
+                                    ? 3'b100 : {iVGA_R, iVGA_G, iVGA_B};//iVGA_RGB;
 
-assign {oVGA_R, oVGA_G, oVGA_B} = iVGA_RGB;
+//assign {oVGA_R, oVGA_G, oVGA_B} = iVGA_RGB;
 
 
 UPCOUNTER_POSEDGE # (10) HORIZONTAL_COUNTER

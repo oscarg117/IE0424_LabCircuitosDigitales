@@ -27,28 +27,28 @@ always @ ( iAddress )
 2    : oInstruction = { `STO , `R15, 16'd0};               //R15=yi
 3    : oInstruction = { `STO , `R12, 16'd79};              //R12=xf
 4    : oInstruction = { `STO , `R13, 16'd14};              //R13=yf
-5    : oInstruction = { `STO , `R11, `COLOR_GREEN, 8'd0};  //R11=COLOR_GREEN
+5    : oInstruction = { `STO , `R11, 8'd0, `COLOR_GREEN};  //R11=COLOR_GREEN
 6    : oInstruction = { `CALL , `DRAW_SQR, 16'd0 };        //Dibuja un cuadro
 
 7    : oInstruction = { `STO , `R14, 16'd0};               //R14=xi
 8    : oInstruction = { `STO , `R15, 16'd15};              //R15=yi
 9    : oInstruction = { `STO , `R12, 16'd79};              //R12=xf
 10   : oInstruction = { `STO , `R13, 16'd29};              //R13=yf
-11   : oInstruction = { `STO , `R11, `COLOR_RED, 8'd0};    //R11=COLOR_RED
+11   : oInstruction = { `STO , `R11, 8'd0, `COLOR_RED};    //R11=COLOR_RED
 12   : oInstruction = { `CALL , `DRAW_SQR, 16'd0 };        //Dibuja un cuadro
 
 13   : oInstruction = { `STO , `R14, 16'd0};               //R14=xi
 14   : oInstruction = { `STO , `R15, 16'd30};              //R15=yi
 15   : oInstruction = { `STO , `R12, 16'd79};              //R12=xf
 16   : oInstruction = { `STO , `R13, 16'd44};              //R13=yf
-17   : oInstruction = { `STO , `R11, `COLOR_MAGENTA, 8'd0};//R11=COLOR_MAGENTA
+17   : oInstruction = { `STO , `R11, 8'd0, `COLOR_MAGENTA};//R11=COLOR_MAGENTA
 18   : oInstruction = { `CALL , `DRAW_SQR, 16'd0 };        //Dibuja un cuadro
 
 19   : oInstruction = { `STO , `R14, 16'd0};               //R14=xi
 20   : oInstruction = { `STO , `R15, 16'd45};              //R15=yi
 21   : oInstruction = { `STO , `R12, 16'd79};              //R12=xf
 22   : oInstruction = { `STO , `R13, 16'd59};              //R13=yf
-23   : oInstruction = { `STO , `R11, `COLOR_BLUE, 8'd0};   //R11=COLOR_BLUE
+23   : oInstruction = { `STO , `R11, 8'd0, `COLOR_BLUE};   //R11=COLOR_BLUE
 24   : oInstruction = { `CALL , `DRAW_SQR, 16'd0 };        //Dibuja un cuadro
 
 

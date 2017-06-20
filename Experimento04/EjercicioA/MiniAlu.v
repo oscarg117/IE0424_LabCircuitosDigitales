@@ -49,11 +49,11 @@ wire [9: 0] wH_counter, wV_counter;
 wire [9: 0] wH_read, wV_read;
 
 assign wH_read = (  wH_counter >= `HS_Tbp &&
-                    wH_counter < `HS_Ts - `HS_Tpw - `HS_Tfp) ?
+                    wH_counter < `HS_Tdisp + `HS_Tbp) ?
                       (wH_counter - `HS_Tbp) : 10'd0;
 
 assign wV_read = (  wV_counter >= `VS_lines_Tbp &&
-                    wV_counter < `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp) ?
+                    wV_counter < `VS_lines_Tdisp + `VS_lines_Tbp) ?
                       (wV_counter - `VS_lines_Tbp) : 10'd0;
 
 /* */
@@ -153,7 +153,7 @@ RAM_SINGLE_READ_PORT # (3, 13, 80*60) VideoMemory
                        .iWriteEnable( rVGAWriteEnable ),
                        .iReadAddress( {wH_read[9:3], wV_read[9:4]} ),  // Columna, fila
                        .iWriteAddress( {wSourceData1[6:0], wSourceData0[5:0]} ),  // Columna, fila
-                       .iDataIn(wDestination[2:0]),
+                       .iDataIn(wInstruction[18: 16]),
                        .oDataOut( {wVGA_R, wVGA_G, wVGA_B} )
                      );
 
@@ -275,8 +275,8 @@ always @ ( * )
       //-------------------------------------
       `STO:
         begin
-          rWriteEnable <= 1'b1;
           rBranchTaken <= 1'b0;
+          rWriteEnable <= 1'b1;
           {rResultHI, rResult} <= wImmediateValue;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
