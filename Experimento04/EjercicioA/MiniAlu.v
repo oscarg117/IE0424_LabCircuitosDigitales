@@ -16,8 +16,8 @@
 `define VS_lines_Tfp    10
 `define VS_lines_Tbp    29
 
-`define V_OFFSET        100
-`define H_OFFSET        100
+`define V_OFFSET        0
+`define H_OFFSET        0
 
 `endif
 
@@ -153,7 +153,7 @@ RAM_SINGLE_READ_PORT # (3, 13, 80*60) VideoMemory
                        .iWriteEnable( rVGAWriteEnable ),
                        .iReadAddress( {wH_read[9:3], wV_read[9:4]} ),  // Columna, fila
                        .iWriteAddress( {wSourceData1[6:0], wSourceData0[5:0]} ),  // Columna, fila
-                       .iDataIn(wInstruction[18: 16]),
+                       .iDataIn(wDestination[2:0]),
                        .oDataOut( {wVGA_R, wVGA_G, wVGA_B} )
                      );
 
@@ -181,10 +181,6 @@ assign wRetCall = (rRetCall) ? rDirectionBuffer : wDestination;
 
 //assign wIPInitialValue = (Reset) ? 8'b0 : wDestination;
 
-initial
-  begin
-		 $monitor("t=%3d VGA_WEn=%d RET=%d \n",$time,rVGAWriteEnable, rRetCall);
-  end
 
 UPCOUNTER_POSEDGE IP
                   (
@@ -197,7 +193,7 @@ UPCOUNTER_POSEDGE IP
 //assign wIP = (rBranchTaken) ? wIPInitialValue : wIP_temp;
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FFD1
-                             (                //Instruccion
+                             (                //Operacion
                                .Clock(Clock),
                                .Reset(Reset),
                                .Enable(1'b1),
@@ -280,6 +276,7 @@ always @ ( * )
           {rResultHI, rResult} <= wImmediateValue;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+
         end
 
       //-------------------------------------
@@ -334,7 +331,7 @@ always @ ( * )
         `CALL:
           begin
             rWriteEnable <= 1'b0;
-            rResult <= 0;
+            {rResultHI, rResult} <= 0;
             rBranchTaken <= 1'b1;
             rVGAWriteEnable <= 1'b0;
             rRetCall <= 1'b0;

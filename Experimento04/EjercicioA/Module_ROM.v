@@ -7,7 +7,7 @@
 
 `define THE_END    8'd25
 `define DRAW_SQR   8'd27
-`define RGB2RAM    8'd28
+`define RGB2RAM    8'd29
 
 
 module ROM
@@ -15,6 +15,8 @@ module ROM
          input wire[15: 0] iAddress,
          output reg [27: 0] oInstruction
        );
+
+
 always @ ( iAddress )
   begin
     case (iAddress)
@@ -59,13 +61,16 @@ always @ ( iAddress )
 
 //DRAW_SQR
 27   : oInstruction = { `MOV , `R10, `R14, 8'd0};          //x0=xi
+28   : oInstruction = { `NOP , 24'd4000      };            //Espera
 //RGB2RAM
-28   : oInstruction = { `VGA , `R11, `R10, `R15};         //Pixel {x0,yi} a RAM
-29   : oInstruction = { `INC , `R10, `R10, 8'd0};          //x0++
-30   : oInstruction = { `BLE , `RGB2RAM, `R10, `R12};      //Salta si x0<=xf
-31   : oInstruction = { `INC , `R15, `R15, 8'd0};          //yi++
-32   : oInstruction = { `BLE , `DRAW_SQR, `R15, `R13};     //Salta si yi<=yf
-33   : oInstruction = { `RET , 24'd0 };                    //Vuelve al programa
+29   : oInstruction = { `VGA , `R11, `R10, `R15};         //Pixel {x0,yi} a RAM
+30   : oInstruction = { `INC , `R10, `R10, 8'd0};          //x0++
+31   : oInstruction = { `NOP , 24'd4000      };            //Espera
+32   : oInstruction = { `BLE , `RGB2RAM, `R10, `R12};      //Salta si x0<=xf
+33   : oInstruction = { `INC , `R15, `R15, 8'd0};          //yi++
+34   : oInstruction = { `NOP , 24'd4000      };            //Espera
+35   : oInstruction = { `BLE , `DRAW_SQR, `R15, `R13};     //Salta si yi<=yf
+36   : oInstruction = { `RET , 24'd0 };                    //Vuelve al programa
 
 /*--------------------------------------------------------------*/
 /****************************************************************/

@@ -1,5 +1,4 @@
 `timescale 1ns / 1ps
-
 `include "Defintions.v"
 
 `ifndef SYNC_CONSTS
@@ -17,8 +16,8 @@
 `define VS_lines_Tfp    10
 `define VS_lines_Tbp    29
 
-`define V_OFFSET        100
-`define H_OFFSET        100
+`define V_OFFSET        0
+`define H_OFFSET        0
 
 `endif
 
@@ -78,15 +77,15 @@ module VGA_controller
   (
     input wire	Clock_lento,
     input wire Reset,
-    input wire	[2: 0]	iVGA_RGB,
-    input wire [2: 0]	iColorCuadro,
-    input wire [9: 0]	iXRedCounter,
-    input wire [9: 0]	iYRedCounter,
-    output wire	[2: 0]	oVGA_RGB,
+    input wire	[2 :0]	iVGA_RGB,
+    input wire [2 :0]	iColorCuadro,
+    input wire [9 :0]	iXRedCounter,
+    input wire [9 :0]	iYRedCounter,
+    output wire	[2:0]	oVGA_RGB,
     output wire	oHsync,
     output wire	oVsync,
-    output wire [9: 0]	oVcounter,
-    output wire [9: 0]	oHcounter
+    output wire [9:0]	oVcounter,
+    output wire [9:0]	oHcounter
   );
 wire iVGA_R, iVGA_G, iVGA_B;
 wire oVGA_R, oVGA_G, oVGA_B;
@@ -196,7 +195,8 @@ assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < `VS_lines_Tbp+`V_OFFSET  ||
                                     oVcounter >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET ||
                                     oHcounter < `HS_Tbp+`H_OFFSET ||
                                     oHcounter > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
-                                    ? 3'b100 : {iVGA_R, iVGA_G, iVGA_B};//iVGA_RGB;
+                                    ? `RED : {iVGA_R, iVGA_G, iVGA_B};//iVGA_RGB;
+                                    //? `BLUE : wCuadro;
 
 //assign {oVGA_R, oVGA_G, oVGA_B} = iVGA_RGB;
 
