@@ -47,14 +47,14 @@
 `define COLOR_WHITE   8'b00000111
 
 //Colores en 3 bits
-`define BLACK   3'b000
-`define BLUE    3'b001
-`define GREEN   3'b010
-`define CYAN    3'b011
-`define RED     3'b100
-`define MAGENTA 3'b101
-`define YELLOW  3'b110
-`define WHITE   3'b111
+`define BLACK   3'd0
+`define BLUE    3'd1
+`define GREEN   3'd2
+`define CYAN    3'd3
+`define RED     3'd4
+`define MAGENTA 3'd5
+`define YELLOW  3'd6
+`define WHITE   3'd7
 
 `endif
 
@@ -68,13 +68,13 @@
 `define HS_Tfp    16
 `define HS_Tbp    48
 
-`define VS_lines_Ts     521
+`define VS_lines_Ts     521//529
 `define VS_lines_Tdisp  480
 `define VS_lines_Tpw    2
 `define VS_lines_Tfp    10
 `define VS_lines_Tbp    29
 
-`define V_OFFSET        0
-`define H_OFFSET        0
+`define V_OFFSET        100
+`define H_OFFSET        100
 
 `endif

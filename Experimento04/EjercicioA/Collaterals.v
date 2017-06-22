@@ -57,7 +57,7 @@ module VGA_controller
   (
     input wire	Clock_lento,
     input wire Reset,
-    input wire	[2 :0]	iVGA_RGB,
+    input wire	[2:0]	iVGA_RGB,
     output wire	[2:0]	oVGA_RGB,
     output wire	oHsync,
     output wire	oVsync,
@@ -67,45 +67,7 @@ module VGA_controller
 wire iVGA_R, iVGA_G, iVGA_B;
 wire oVGA_R, oVGA_G, oVGA_B;
 wire wEndline;
-wire [3: 0] wMarco; //, wCuadro;
-wire [3: 0] wCuadro;
-
-reg rCuadro;
-
-assign wMarco  = `BLACK;//3'b000;
-
-// assign wCuadro = (  ( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
-//                       oVcounter <= `VS_lines_Tbp+`V_OFFSET+70 ) ||
-//                     (oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
-//                       oVcounter <= `VS_lines_Tbp+`V_OFFSET+210 )  )
-//                           ? `BLUE : 3'b110;
-assign wCuadro = rCuadro;
-
-
-always @ (*)
-  begin
-    if( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
-      oVcounter <= `VS_lines_Tbp+`V_OFFSET+70 )
-      begin
-        rCuadro <= `BLUE;
-      end
-    else if(oVcounter > `VS_lines_Tbp+`V_OFFSET+70 &&
-      oVcounter <= `VS_lines_Tbp+`V_OFFSET+140 )
-      begin
-        rCuadro <= `GREEN;
-      end
-    else if(oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
-      oVcounter <= `VS_lines_Tbp+`V_OFFSET+210 )
-      begin
-        rCuadro <= `RED;
-      end
-    else
-      begin
-        rCuadro <= `CYAN;
-      end
-
-  end
-
+wire [2:0] wMarco; //, wCuadro;
 
 
 
@@ -116,7 +78,26 @@ assign oVGA_RGB = {oVGA_R, oVGA_G, oVGA_B};
 
 assign oHsync = (oHcounter < `HS_Ts - `HS_Tpw) ? 1'b1 : 1'b0;
 assign wEndline = (oHcounter == `HS_Ts - 1);
-assign oVsync = (oVcounter < `VS_lines_Ts - `VS_lines_Tpw) ? 1'b1 : 1'b0;
+assign oVsync = (oVcounter < `VS_lines_Ts - 1) ? 1'b1 : 1'b0;
+
+assign wMarco  = `BLACK;//3'b000;
+
+wire [2:0] wCuadroT, wCuadroB, wCuadro;
+
+assign wCuadroT = (  ( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
+                      oVcounter < `VS_lines_Tbp+`V_OFFSET+70 ) ||
+                    (oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
+                      oVcounter < `VS_lines_Tbp+`V_OFFSET+210 )  )
+                          ? `GREEN : `RED;
+
+assign wCuadroB = (  ( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
+                      oVcounter < `VS_lines_Tbp+`V_OFFSET+70 ) ||
+                    (oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
+                      oVcounter < `VS_lines_Tbp+`V_OFFSET+210 )  )
+                          ? `MAGENTA : `BLUE;
+
+assign wCuadro = ( oVcounter > `VS_lines_Tbp+`V_OFFSET+140 )
+                          ? wCuadroB : wCuadroT;
 
 
 // Marco negro de 440*280
@@ -124,10 +105,11 @@ assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < `VS_lines_Tbp+`V_OFFSET  ||
                                     oVcounter >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET ||
                                     oHcounter < `HS_Tbp+`H_OFFSET ||
                                     oHcounter > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
-                                    ? `RED : {iVGA_R, iVGA_G, iVGA_B};//iVGA_RGB;
-                                    //? wMarco : wCuadro;
+                                    //? {`RED} : {iVGA_R, iVGA_G, iVGA_B};//iVGA_RGB;
+                                    ? `BLACK : wCuadro;
 
 //assign {oVGA_R, oVGA_G, oVGA_B} = iVGA_RGB;
+//assign {oVGA_R, oVGA_G, oVGA_B} = wCuadro;
 
 
 UPCOUNTER_POSEDGE # (10) HORIZONTAL_COUNTER
