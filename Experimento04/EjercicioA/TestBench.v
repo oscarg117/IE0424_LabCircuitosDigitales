@@ -62,10 +62,6 @@ always
 
 initial
   begin
-
-    // $dumpfile("test.vcd");
-    // $dumpvars;
-
     // Initialize Inputs
     Clock = 0;
     Reset = 0;
@@ -74,7 +70,7 @@ initial
     #100;
     Reset = 1;
     #50
-    Reset = 0;
+     Reset = 0;
 
     // Add stimulus here
 

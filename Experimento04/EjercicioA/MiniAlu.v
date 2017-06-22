@@ -1,26 +1,6 @@
 `timescale 1ns / 1ps
 `include "Defintions.v"
 
-`ifndef SYNC_CONSTS
-`define SYNC_CONSTS
-
-`define HS_Ts     800
-`define HS_Tdisp  640
-`define HS_Tpw    96
-`define HS_Tfp    16
-`define HS_Tbp    48
-
-`define VS_lines_Ts     521
-`define VS_lines_Tdisp  480
-`define VS_lines_Tpw    2
-`define VS_lines_Tfp    10
-`define VS_lines_Tbp    29
-
-`define V_OFFSET        0
-`define H_OFFSET        0
-
-`endif
-
 
 module MiniAlu
        (
@@ -35,10 +15,9 @@ wire [15: 0] wIP, wIP_temp;
 reg rWriteEnable, rBranchTaken;
 wire [27: 0] wInstruction;
 wire [3: 0] wOperation;
-reg signed [15: 0] rResult, rResultHI; //Con signo
-wire signed [31: 0]	wResultTotal;
+reg [15: 0] rResult, rResultHI; //Con signo
 wire [7: 0] wSourceAddr0, wSourceAddr1, wDestination;
-wire signed [15: 0] wSourceData0, wSourceData1, wIPInitialValue, wImmediateValue; //Con signo
+wire [15: 0] wSourceData0, wSourceData1, wIPInitialValue, wImmediateValue; //Con signo
 
 /******/
 
@@ -67,8 +46,7 @@ assign wV_read = (  wV_counter >= `VS_lines_Tbp &&
 reg rRetCall;
 reg [7: 0] rDirectionBuffer;
 wire [7: 0] wRetCall;
-wire [9: 0] wXRedCounter, wYRedCounter;
-wire [2: 0] HolyCow;
+
 
 // Definición del clock de 25 MHz
 wire Clock_lento; // Clock con frecuencia de 25 MHz
@@ -109,35 +87,14 @@ VGA_controller VGA_controlador
                (
                  .Clock_lento(Clock_lento),
                  .Reset(Reset),
-                 .iXRedCounter(wXRedCounter),
-                 .iYRedCounter(wYRedCounter),
                  .iVGA_RGB({wVGA_R, wVGA_G, wVGA_B}),
-                 .iColorCuadro(HolyCow),
                  .oVGA_RGB({VGA_RED, VGA_GREEN, VGA_BLUE}),
                  .oHsync(VGA_HSYNC),
                  .oVsync(VGA_VSYNC),
                  .oVcounter(wV_counter),
                  .oHcounter(wH_counter)
                );
-// reg [7: 0] Filter;
-// reg FClock;
-// always @ (posedge Clock_lento)
-//   begin
-//     Filter <= {PS2_CLK, Filter[7: 1]};
-//
-//     if (Filter == 8'hFF) FClock = 1'b1;
-//     if (Filter == 8'd0) FClock = 1'b0;
-//   end
-//
-// reg [7: 0] FilterData;
-// reg FData;
-// always @ (posedge Clock_lento)
-//   begin
-//     FilterData <= {PS2_DATA, FilterData[7: 1]};
-//
-//     if (FilterData == 8'hFF) FData = 1'b1;
-//     if (FilterData == 8'd0) FData = 1'b0;
-//   end
+
 
 
 ROM InstructionRom
@@ -147,17 +104,17 @@ ROM InstructionRom
     );
 
 
-RAM_SINGLE_READ_PORT # (3, 13, 80*60) VideoMemory
+RAM_SINGLE_READ_PORT # (3, 16, 80*60) VideoMemory
                      (
                        .Clock(Clock),
                        .iWriteEnable( rVGAWriteEnable ),
-                       .iReadAddress( {wH_read[9:3], wV_read[9:4]} ),  // Columna, fila
-                       .iWriteAddress( {wSourceData1[6:0], wSourceData0[5:0]} ),  // Columna, fila
+                       .iReadAddress( {3'd0,wH_read[9:3], wV_read[9:4]} ),  // Columna, fila
+                       .iWriteAddress( {3'd0,wSourceData1[6:0], wSourceData0[5:0]} ),  // Columna, fila
                        .iDataIn(wDestination[2:0]),
                        .oDataOut( {wVGA_R, wVGA_G, wVGA_B} )
                      );
 
-RAM_DUAL_READ_PORT DataRam
+RAM_DUAL_READ_PORT # (16, 8, 16) DataRam
                    (
                      .Clock( Clock ),
                      .iWriteEnable( rWriteEnable ),
@@ -231,7 +188,7 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD4
 
 
 assign wImmediateValue = {wSourceAddr1, wSourceAddr0};
-assign wResultTotal = {rResultHI, rResult};
+
 
 
 
@@ -271,12 +228,11 @@ always @ ( * )
       //-------------------------------------
       `STO:
         begin
-          rBranchTaken <= 1'b0;
           rWriteEnable <= 1'b1;
+          rBranchTaken <= 1'b0;
           {rResultHI, rResult} <= wImmediateValue;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
-
         end
 
       //-------------------------------------

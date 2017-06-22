@@ -57,3 +57,24 @@
 `define WHITE   3'b111
 
 `endif
+
+
+`ifndef SYNC_CONSTS
+`define SYNC_CONSTS
+
+`define HS_Ts     800
+`define HS_Tdisp  640
+`define HS_Tpw    96
+`define HS_Tfp    16
+`define HS_Tbp    48
+
+`define VS_lines_Ts     521
+`define VS_lines_Tdisp  480
+`define VS_lines_Tpw    2
+`define VS_lines_Tfp    10
+`define VS_lines_Tbp    29
+
+`define V_OFFSET        0
+`define H_OFFSET        0
+
+`endif

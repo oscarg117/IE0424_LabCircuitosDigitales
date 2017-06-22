@@ -1,26 +1,6 @@
 `timescale 1ns / 1ps
 `include "Defintions.v"
 
-`ifndef SYNC_CONSTS
-`define SYNC_CONSTS
-
-`define HS_Ts     800
-`define HS_Tdisp  640
-`define HS_Tpw    96
-`define HS_Tfp    16
-`define HS_Tbp    48
-
-`define VS_lines_Ts     521
-`define VS_lines_Tdisp  480
-`define VS_lines_Tpw    2
-`define VS_lines_Tfp    10
-`define VS_lines_Tbp    29
-
-`define V_OFFSET        0
-`define H_OFFSET        0
-
-`endif
-
 //------------------------------------------------
 module UPCOUNTER_POSEDGE # (parameter SIZE = 16)
        (
@@ -78,9 +58,6 @@ module VGA_controller
     input wire	Clock_lento,
     input wire Reset,
     input wire	[2 :0]	iVGA_RGB,
-    input wire [2 :0]	iColorCuadro,
-    input wire [9 :0]	iXRedCounter,
-    input wire [9 :0]	iYRedCounter,
     output wire	[2:0]	oVGA_RGB,
     output wire	oHsync,
     output wire	oVsync,
@@ -92,92 +69,44 @@ wire oVGA_R, oVGA_G, oVGA_B;
 wire wEndline;
 wire [3: 0] wMarco; //, wCuadro;
 wire [3: 0] wCuadro;
-wire [2: 0] wVGAOutputSelection;
-reg [9: 0] puntero1, puntero2;
-reg [23: 0] contador1, contador2;
 
-assign wMarco  = `RED;//3'b000;
+reg rCuadro;
 
-assign wCuadro = (  ( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
-                      oVcounter <= `VS_lines_Tbp+`V_OFFSET+70 ) ||
-                    (oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
-                      oVcounter <= `VS_lines_Tbp+`V_OFFSET+210 )  )
-                        ? `GREEN : `BLUE;
+assign wMarco  = `BLACK;//3'b000;
 
-initial
+// assign wCuadro = (  ( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
+//                       oVcounter <= `VS_lines_Tbp+`V_OFFSET+70 ) ||
+//                     (oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
+//                       oVcounter <= `VS_lines_Tbp+`V_OFFSET+210 )  )
+//                           ? `BLUE : 3'b110;
+assign wCuadro = rCuadro;
+
+
+always @ (*)
   begin
-    puntero1 <= 10'b0;
-    puntero2 <= 10'd96;
-    contador1 <= 24'b0;
-    contador2 <= 24'b0;
-  end
-
-always @ (posedge Clock_lento )
-  begin
-    if (contador1 >= 23'd45000000)//3056960/25M ~0,1222784s
+    if( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
+      oVcounter <= `VS_lines_Tbp+`V_OFFSET+70 )
       begin
-        puntero1 <= puntero1 + 10'd32;
-        puntero2 <= puntero2;
-        contador1 <= 24'b0;
-        contador2 <= contador2;
+        rCuadro <= `BLUE;
       end
-    else if (contador2 >= 23'd40000000)//6445568/25M ~0,25782272s
+    else if(oVcounter > `VS_lines_Tbp+`V_OFFSET+70 &&
+      oVcounter <= `VS_lines_Tbp+`V_OFFSET+140 )
       begin
-        puntero2 <= puntero2 + 10'd32;
-        puntero1 <= puntero1;
-        contador1 <= contador1;
-        contador2 <= 24'b0;
+        rCuadro <= `GREEN;
+      end
+    else if(oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
+      oVcounter <= `VS_lines_Tbp+`V_OFFSET+210 )
+      begin
+        rCuadro <= `RED;
       end
     else
       begin
-        puntero1 <= puntero1;
-        puntero2 <= puntero2;
-        contador1 <= contador1 + 24'b1;
-        contador2 <= contador2 + 24'b1;
+        rCuadro <= `CYAN;
       end
+
   end
 
 
-assign wVGAOutputSelection = (
-         (((oHcounter >= iXRedCounter + 10'd272) && (oHcounter <= iXRedCounter + 10'd272 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd333) && (oVcounter <= iYRedCounter + 10'd333 + 10'd31)))
-
-          ||
-
-         (((oHcounter >= iXRedCounter + 10'd272) && (oHcounter <= iXRedCounter + 10'd272 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd397) && (oVcounter <= iYRedCounter + 10'd397 + 10'd31)))
-
-          ||
-
-         (((oHcounter >= iXRedCounter + 10'd240) && (oHcounter <= iXRedCounter + 10'd240 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd429) && (oVcounter <= iYRedCounter + 10'd429 + 10'd31)))
-
-          ||
-
-         (((oHcounter >= iXRedCounter + 10'd240) && (oHcounter <= iXRedCounter + 10'd240 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd365) && (oVcounter <= iYRedCounter + 10'd365 + 10'd31)))
-
-          ||
-
-         (((oHcounter >= iXRedCounter + 10'd304) && (oHcounter <= iXRedCounter + 10'd304 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd365) && (oVcounter <= iYRedCounter + 10'd365 + 10'd31)))
-
-          ||
-
-         (((oHcounter >= iXRedCounter + 10'd304) && (oHcounter <= iXRedCounter + 10'd304 + 10'd31)) &&
-          ((oVcounter >= iYRedCounter + 10'd429) && (oVcounter <= iYRedCounter + 10'd429 + 10'd31)))
-
-          ||
-
-         (((oHcounter >= 10'd272) && (oHcounter <= 10'd272 + 10'd31)) &&
-          ((oVcounter >= 10'd77 + puntero1) && (oVcounter <= 10'd77 + puntero1 + 10'd31)))
-
-          ||
-
-         (((oHcounter >= 10'd368) && (oHcounter <= 10'd368 + 10'd31)) &&
-          ((oVcounter >= 10'd77 + puntero2) && (oVcounter <= 10'd77 + puntero2 + 10'd31)))
-
-       ) ? iColorCuadro : {iVGA_R, iVGA_G, iVGA_B}; //Cuadro central
 
 
 assign iVGA_R = iVGA_RGB[2];
@@ -196,7 +125,7 @@ assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < `VS_lines_Tbp+`V_OFFSET  ||
                                     oHcounter < `HS_Tbp+`H_OFFSET ||
                                     oHcounter > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
                                     ? `RED : {iVGA_R, iVGA_G, iVGA_B};//iVGA_RGB;
-                                    //? `BLUE : wCuadro;
+                                    //? wMarco : wCuadro;
 
 //assign {oVGA_R, oVGA_G, oVGA_B} = iVGA_RGB;
 
