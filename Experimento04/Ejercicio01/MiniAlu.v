@@ -15,10 +15,9 @@ wire [15: 0] wIP, wIP_temp;
 reg rWriteEnable, rBranchTaken;
 wire [27: 0] wInstruction;
 wire [3: 0] wOperation;
-reg signed [15: 0] rResult, rResultHI; //Con signo
-wire signed [31: 0]	wResultTotal;
+reg [15: 0] rResult, rResultHI; //Con signo
 wire [7: 0] wSourceAddr0, wSourceAddr1, wDestination;
-wire signed [15: 0] wSourceData0, wSourceData1, wIPInitialValue, wImmediateValue; //Con signo
+wire [15: 0] wSourceData0, wSourceData1, wIPInitialValue, wImmediateValue; //Con signo
 
 /******/
 
@@ -26,15 +25,28 @@ reg rVGAWriteEnable;
 wire wVGA_R, wVGA_G, wVGA_B;
 
 wire [9: 0] wH_counter, wV_counter;
-wire [7: 0] wH_read, wV_read;
-assign wH_read = (wH_counter >= 208 && wH_counter <= 528) ? (wH_counter - 208) : 8'd0;
-assign wV_read = (wV_counter >= 77 && wV_counter <= 461) ? (wV_counter - 77) : 8'd0;
+wire [9: 0] wH_read, wV_read;
+
+assign wH_read = (  wH_counter >= `HS_Tbp &&
+                    wH_counter < `HS_Tdisp + `HS_Tbp) ?
+                      (wH_counter - `HS_Tbp) : 10'd0;
+
+assign wV_read = (  wV_counter >= `VS_lines_Tbp &&
+                    wV_counter < `VS_lines_Tdisp + `VS_lines_Tbp) ?
+                      (wV_counter - `VS_lines_Tbp) : 10'd0;
+
+/* */
+// assign wH_read = (  wH_counter >= `HS_Tbp+`H_OFFSET &&
+//                     wH_counter <= `VS_lines_Ts - `VS_lines_Tpw) ?
+//                       (wH_counter - `HS_Tbp+`H_OFFSET) : 8'd0;
+// assign wV_read = (  wV_counter >= `VS_lines_Tbp+`V_OFFSET &&
+//                     wV_counter <= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET) ?
+//                       (wV_counter - `VS_lines_Tbp+`V_OFFSET) : 8'd0;
 
 reg rRetCall;
 reg [7: 0] rDirectionBuffer;
 wire [7: 0] wRetCall;
-wire [9: 0] wXRedCounter, wYRedCounter;
-wire [3: 0] HolyCow;
+
 
 // Definición del clock de 25 MHz
 wire Clock_lento; // Clock con frecuencia de 25 MHz
@@ -75,35 +87,14 @@ VGA_controller VGA_controlador
                (
                  .Clock_lento(Clock_lento),
                  .Reset(Reset),
-                 .iXRedCounter(wXRedCounter),
-                 .iYRedCounter(wYRedCounter),
                  .iVGA_RGB({wVGA_R, wVGA_G, wVGA_B}),
-                 .iColorCuadro(HolyCow),
                  .oVGA_RGB({VGA_RED, VGA_GREEN, VGA_BLUE}),
                  .oHsync(VGA_HSYNC),
                  .oVsync(VGA_VSYNC),
                  .oVcounter(wV_counter),
                  .oHcounter(wH_counter)
                );
-// reg [7: 0] Filter;
-// reg FClock;
-// always @ (posedge Clock_lento)
-//   begin
-//     Filter <= {PS2_CLK, Filter[7: 1]};
-//
-//     if (Filter == 8'hFF) FClock = 1'b1;
-//     if (Filter == 8'd0) FClock = 1'b0;
-//   end
-//
-// reg [7: 0] FilterData;
-// reg FData;
-// always @ (posedge Clock_lento)
-//   begin
-//     FilterData <= {PS2_DATA, FilterData[7: 1]};
-//
-//     if (FilterData == 8'hFF) FData = 1'b1;
-//     if (FilterData == 8'd0) FData = 1'b0;
-//   end
+
 
 
 ROM InstructionRom
@@ -113,17 +104,19 @@ ROM InstructionRom
     );
 
 
-RAM_SINGLE_READ_PORT # (3, 16, 122879) VideoMemory
+RAM_SINGLE_READ_PORT # (3, 13, 80*60) VideoMemory
                      (
                        .Clock(Clock),
                        .iWriteEnable( rVGAWriteEnable ),
-                       .iReadAddress( {wH_read, wV_read} ),  // Columna, fila
-                       .iWriteAddress( {wSourceData1[7: 0], wSourceData0[7: 0]} ),  // Columna, fila
-                       .iDataIn(wDestination[2: 0]),
+                       .iReadAddress( {wH_read[9:3], wV_read[8:3]} ),  // Columna, fila
+                       .iWriteAddress( {wSourceData1[6:0], wSourceData0[5:0]} ),  // Columna, fila
+                       .iDataIn(wDestination[2:0]),
                        .oDataOut( {wVGA_R, wVGA_G, wVGA_B} )
                      );
 
-RAM_DUAL_READ_PORT DataRam
+
+
+RAM_DUAL_READ_PORT # (16, 8, 16) DataRam
                    (
                      .Clock( Clock ),
                      .iWriteEnable( rWriteEnable ),
@@ -159,7 +152,7 @@ UPCOUNTER_POSEDGE IP
 //assign wIP = (rBranchTaken) ? wIPInitialValue : wIP_temp;
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FFD1
-                             (
+                             (                //Operacion
                                .Clock(Clock),
                                .Reset(Reset),
                                .Enable(1'b1),
@@ -168,7 +161,7 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FFD1
                              );
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD2
-                             (
+                             (                //Registro 0 (Der)
                                .Clock(Clock),
                                .Reset(Reset),
                                .Enable(1'b1),
@@ -177,7 +170,7 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD2
                              );
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD3
-                             (
+                             (                //Registro 1 (Centro)
                                .Clock(Clock),
                                .Reset(Reset),
                                .Enable(1'b1),
@@ -186,7 +179,7 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD3
                              );
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD4
-                             (
+                             (                //Registro destino (Izq)
                                .Clock(Clock),
                                .Reset(Reset),
                                .Enable(1'b1),
@@ -195,18 +188,9 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD4
                              );
 
 
-// reg rFFLedEN;
-// FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FF_LEDS
-//                              (
-//                                .Clock(Clock),
-//                                .Reset(Reset),
-//                                .Enable( rFFLedEN ),
-//                                .D( wSourceData1[7: 0] ),
-//                                .Q( oLed )
-//                              );
 
 assign wImmediateValue = {wSourceAddr1, wSourceAddr0};
-assign wResultTotal = {rResultHI, rResult};
+
 
 
 
@@ -305,7 +289,7 @@ always @ ( * )
         `CALL:
           begin
             rWriteEnable <= 1'b0;
-            rResult <= 0;
+            {rResultHI, rResult} <= 0;
             rBranchTaken <= 1'b1;
             rVGAWriteEnable <= 1'b0;
             rRetCall <= 1'b0;
@@ -340,6 +324,16 @@ always @ ( * )
             rVGAWriteEnable <= 1'b0;
             rRetCall <= 1'b0;
           end
+
+          //-------------------------------------
+          `MOV:
+            begin
+              rBranchTaken <= 1'b0;
+              rWriteEnable <= 1'b1;
+              {rResultHI, rResult} <= wSourceData1;
+              rVGAWriteEnable <= 1'b0;
+              rRetCall <= 1'b0;
+            end
       //-------------------------------------
       default:
         begin

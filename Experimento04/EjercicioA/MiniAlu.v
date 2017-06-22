@@ -104,15 +104,17 @@ ROM InstructionRom
     );
 
 
-RAM_SINGLE_READ_PORT # (3, 16, 80*60) VideoMemory
+RAM_SINGLE_READ_PORT # (3, 13, 80*60) VideoMemory
                      (
                        .Clock(Clock),
                        .iWriteEnable( rVGAWriteEnable ),
-                       .iReadAddress( {3'd0,wH_read[9:3], wV_read[9:4]} ),  // Columna, fila
-                       .iWriteAddress( {3'd0,wSourceData1[6:0], wSourceData0[5:0]} ),  // Columna, fila
+                       .iReadAddress( {wH_read[9:3], wV_read[8:3]} ),  // Columna, fila
+                       .iWriteAddress( {wSourceData1[6:0], wSourceData0[5:0]} ),  // Columna, fila
                        .iDataIn(wDestination[2:0]),
                        .oDataOut( {wVGA_R, wVGA_G, wVGA_B} )
                      );
+
+
 
 RAM_DUAL_READ_PORT # (16, 8, 16) DataRam
                    (

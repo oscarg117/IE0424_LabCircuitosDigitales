@@ -60,6 +60,8 @@ always
 
   end
 
+integer file, f, c;
+
 initial
   begin
     // Initialize Inputs
@@ -70,10 +72,9 @@ initial
     #100;
     Reset = 1;
     #50
-     Reset = 0;
+    Reset = 0;
 
-    // Add stimulus here
-
+    
   end
 
 endmodule

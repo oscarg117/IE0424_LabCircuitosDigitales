@@ -105,8 +105,8 @@ assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < `VS_lines_Tbp+`V_OFFSET  ||
                                     oVcounter >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET ||
                                     oHcounter < `HS_Tbp+`H_OFFSET ||
                                     oHcounter > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
-                                    //? {`RED} : {iVGA_R, iVGA_G, iVGA_B};//iVGA_RGB;
-                                    ? `BLACK : wCuadro;
+                                    ? `BLACK : {iVGA_R, iVGA_G, iVGA_B};//iVGA_RGB;
+                                    //? `BLACK : wCuadro;
 
 //assign {oVGA_R, oVGA_G, oVGA_B} = iVGA_RGB;
 //assign {oVGA_R, oVGA_G, oVGA_B} = wCuadro;

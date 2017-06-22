@@ -74,7 +74,7 @@
 `define VS_lines_Tfp    10
 `define VS_lines_Tbp    29
 
-`define V_OFFSET        100
-`define H_OFFSET        100
+`define V_OFFSET        0
+`define H_OFFSET        0
 
 `endif

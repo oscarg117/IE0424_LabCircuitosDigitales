@@ -14,16 +14,15 @@ module RAM_DUAL_READ_PORT # ( parameter DATA_WIDTH = 16, parameter ADDR_WIDTH = 
 
 reg [DATA_WIDTH - 1: 0] Ram [MEM_SIZE: 0];
 
+
 always @(posedge Clock)
   begin
 
     if (iWriteEnable)
       Ram[iWriteAddress] <= iDataIn;
 
-
     oDataOut0 <= Ram[iReadAddress0];
     oDataOut1 <= Ram[iReadAddress1];
-
   end
 
 endmodule
