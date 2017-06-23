@@ -19,16 +19,16 @@
 `define MOV   4'd12
 
 
-`define R0 8'd0
-`define R1 8'd1
-`define R2 8'd2
-`define R3 8'd3
-`define R4 8'd4
-`define R5 8'd5
-`define R6 8'd6
-`define R7 8'd7
-`define R8 8'd8
-`define R9 8'd9
+`define R0  8'd0
+`define R1  8'd1
+`define R2  8'd2
+`define R3  8'd3
+`define R4  8'd4
+`define R5  8'd5
+`define R6  8'd6
+`define R7  8'd7
+`define R8  8'd8
+`define R9  8'd9
 `define R10 8'd10
 `define R11 8'd11
 `define R12 8'd12
@@ -68,7 +68,7 @@
 `define HS_Tfp    16
 `define HS_Tbp    48
 
-`define VS_lines_Ts     521//529
+`define VS_lines_Ts     521
 `define VS_lines_Tdisp  480
 `define VS_lines_Tpw    2
 `define VS_lines_Tfp    10

@@ -5,9 +5,9 @@
 module UPCOUNTER_POSEDGE # (parameter SIZE = 16)
        (
          input wire Clock, Reset,
-         input wire [SIZE - 1: 0] Initial,
+         input wire [SIZE-1:0] Initial,
          input wire Enable,
-         output reg [SIZE - 1: 0] Q
+         output reg [SIZE-1:0] Q
        );
 
 
@@ -30,8 +30,8 @@ endmodule
     input wire	Clock,
     input wire	Reset,
     input wire	Enable,
-    input wire [SIZE - 1: 0]	D,
-    output reg [SIZE - 1: 0]	Q
+    input wire [SIZE-1:0]	D,
+    output reg [SIZE-1:0]	Q
   );
 
 
@@ -50,84 +50,55 @@ always @ (posedge Clock)
 endmodule
 
 
-//----------------------------------------------------------------------
+  //----------------------------------------------------------------------
 
 
-module VGA_controller
+  module VGA_controller
   (
-    input wire	Clock_lento,
+    input wire clk25MHz,
     input wire Reset,
-    input wire	[2:0]	iVGA_RGB,
-    output wire	[2:0]	oVGA_RGB,
-    output wire	oHsync,
-    output wire	oVsync,
-    output wire [9:0]	oVcounter,
-    output wire [9:0]	oHcounter
+    input wire	[2:0]	iFromVRAM_RGB,
+    output wire	[2:0]	oToVGA_RGB,
+    output wire	oHSync,
+    output wire	oVSync,
+    output wire [9:0]	oVcnt,
+    output wire [9:0]	oHcnt
   );
-wire iVGA_R, iVGA_G, iVGA_B;
-wire oVGA_R, oVGA_G, oVGA_B;
-wire wEndline;
-wire [2:0] wMarco; //, wCuadro;
+wire wFromVRAM_R, wFromVRAM_G, wFromVRAM_B;
+wire wToVGA_R, wToVGA_G, wToVGA_B;
+wire wEOL;
 
+assign wFromVRAM_R = iFromVRAM_RGB[2];
+assign wFromVRAM_G = iFromVRAM_RGB[1];
+assign wFromVRAM_B = iFromVRAM_RGB[0];
+assign oToVGA_RGB = {wToVGA_R, wToVGA_G, wToVGA_B};
 
+assign oHSync = (oHcnt < `HS_Ts - `HS_Tpw) ? 1'b1 : 1'b0;
+assign wEOL = (oHcnt == `HS_Ts - 1);
+assign oVSync = (oVcnt < `VS_lines_Ts - 1) ? 1'b1 : 1'b0;
 
-assign iVGA_R = iVGA_RGB[2];
-assign iVGA_G = iVGA_RGB[1];
-assign iVGA_B = iVGA_RGB[0];
-assign oVGA_RGB = {oVGA_R, oVGA_G, oVGA_B};
-
-assign oHsync = (oHcounter < `HS_Ts - `HS_Tpw) ? 1'b1 : 1'b0;
-assign wEndline = (oHcounter == `HS_Ts - 1);
-assign oVsync = (oVcounter < `VS_lines_Ts - 1) ? 1'b1 : 1'b0;
-
-assign wMarco  = `BLACK;//3'b000;
-
-wire [2:0] wCuadroT, wCuadroB, wCuadro;
-
-assign wCuadroT = (  ( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
-                      oVcounter < `VS_lines_Tbp+`V_OFFSET+70 ) ||
-                    (oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
-                      oVcounter < `VS_lines_Tbp+`V_OFFSET+210 )  )
-                          ? `GREEN : `RED;
-
-assign wCuadroB = (  ( oVcounter >= `VS_lines_Tbp+`V_OFFSET &&
-                      oVcounter < `VS_lines_Tbp+`V_OFFSET+70 ) ||
-                    (oVcounter > `VS_lines_Tbp+`V_OFFSET+140 &&
-                      oVcounter < `VS_lines_Tbp+`V_OFFSET+210 )  )
-                          ? `MAGENTA : `BLUE;
-
-assign wCuadro = ( oVcounter > `VS_lines_Tbp+`V_OFFSET+140 )
-                          ? wCuadroB : wCuadroT;
-
-
-// Marco negro de 440*280
-assign {oVGA_R, oVGA_G, oVGA_B} = ( oVcounter < `VS_lines_Tbp+`V_OFFSET  ||
-                                    oVcounter >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET ||
-                                    oHcounter < `HS_Tbp+`H_OFFSET ||
-                                    oHcounter > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
-                                    ? `BLACK : {iVGA_R, iVGA_G, iVGA_B};//iVGA_RGB;
-                                    //? `BLACK : wCuadro;
-
-//assign {oVGA_R, oVGA_G, oVGA_B} = iVGA_RGB;
-//assign {oVGA_R, oVGA_G, oVGA_B} = wCuadro;
-
+assign {wToVGA_R, wToVGA_G, wToVGA_B} = ( oVcnt < `VS_lines_Tbp+`V_OFFSET  ||
+                                    oVcnt >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET ||
+                                    oHcnt < `HS_Tbp+`H_OFFSET ||
+                                    oHcnt > `HS_Ts-`HS_Tpw-`HS_Tfp-`H_OFFSET  )
+                                    ? `BLACK : {wFromVRAM_R, wFromVRAM_G, wFromVRAM_B};
 
 UPCOUNTER_POSEDGE # (10) HORIZONTAL_COUNTER
                   (
-                    .Clock	( Clock_lento ),
-                    .Reset	( (oHcounter > `HS_Ts-1) || Reset ),
+                    .Clock	( clk25MHz ),
+                    .Reset	( (oHcnt > `HS_Ts-1) || Reset ),
                     .Initial	( 10'b0 ),
                     .Enable	( 1'b1	),
-                    .Q	(	oHcounter )
+                    .Q	(	oHcnt )
                   );
 
 UPCOUNTER_POSEDGE # (10) VERTICAL_COUNTER
                   (
-                    .Clock	( Clock_lento ),
-                    .Reset	( (oVcounter > `VS_lines_Ts-1) || Reset ),
+                    .Clock	( clk25MHz ),
+                    .Reset	( (oVcnt > `VS_lines_Ts-1) || Reset ),
                     .Initial	( 10'b0 ),
-                    .Enable	( wEndline ),
-                    .Q	( oVcounter )
+                    .Enable	( wEOL ),
+                    .Q	( oVcnt )
                   );
 
 endmodule

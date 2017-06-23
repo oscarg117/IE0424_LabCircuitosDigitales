@@ -36,17 +36,9 @@ wire oH_sync;
 wire oV_sync;
 
 // Instantiate the Unit Under Test (UUT)
-// MiniAlu uut (
-//           .Clock(Clock),
-//           .Reset(Reset),
-//           .oLed(oLed)
-//         );
-
 MiniAlu uut (
           .Clock(Clock),
           .Reset(Reset),
-//          .PS2_CLK(PS2_CLK),
-//          .PS2_DATA(PS2_DATA),
           .VGA_RED(oVGA_R),
           .VGA_GREEN(oVGA_G),
           .VGA_BLUE(oVGA_B),
@@ -57,10 +49,7 @@ MiniAlu uut (
 always
   begin
     #5 Clock = ! Clock;
-
   end
-
-integer file, f, c;
 
 initial
   begin
@@ -72,9 +61,8 @@ initial
     #100;
     Reset = 1;
     #50
-    Reset = 0;
+     Reset = 0;
 
-    
   end
 
 endmodule
