@@ -206,20 +206,6 @@ always @ ( * )
         end
 
       //-------------------------------------
-      `BGE:
-        begin
-          rWriteEnable <= 1'b0;
-          {rResultHI, rResult} <= 32'd0;
-          rVGAWriteEnable <= 1'b0;
-          rRetCall <= 1'b0;
-
-          if (wSourceData1 >= wSourceData0 )
-            rBranchTaken <= 1'b1;
-          else
-            rBranchTaken <= 1'b0;
-        end
-
-      //-------------------------------------
       `JMP:
         begin
           rWriteEnable <= 1'b0;

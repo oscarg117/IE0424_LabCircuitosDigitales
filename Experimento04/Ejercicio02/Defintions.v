@@ -4,19 +4,18 @@
 
 `default_nettype none
 
-`define NOP   4'd0
+`define NOP   4'd0 
 `define SMUL  4'd1
 `define BLE   4'd2
-`define BGE   4'd3
-`define STO   4'd4
-`define ADD   4'd5
-`define JMP   4'd6
-`define SUB   4'd7
-`define CALL  4'd8
-`define RET   4'd9
-`define VGA   4'd10
-`define INC   4'd11
-`define MOV   4'd12
+`define STO   4'd3
+`define ADD   4'd4
+`define JMP   4'd5
+`define SUB   4'd6
+`define CALL  4'd7
+`define RET   4'd8
+`define VGA   4'd9
+`define INC   4'd10
+`define MOV   4'd11
 
 
 `define R0  8'd0

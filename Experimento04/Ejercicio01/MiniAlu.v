@@ -72,8 +72,8 @@ RAM_SINGLE_READ_PORT # (3, 13, 80*60) VideoRAM
                      (
                        .Clock(Clock),
                        .iWriteEnable( rVGAWriteEnable ),
-                       .iReadAddress( {wCurrCol[9:3], wCurrRow[8:3]} ),  // Col, Row
-                       .iWriteAddress( {wSourceData1[6:0], wSourceData0[5:0]} ),  // Col, Row
+                       .iReadAddress( {wCurrRow[8:3], wCurrCol[9:3]} ),  // Row, Col
+                       .iWriteAddress( {wSourceData0[5:0], wSourceData1[6:0]} ),  // Row, Col
                        .iDataIn( wDestination[2:0] ),
                        .oDataOut( {wVGA_R, wVGA_G, wVGA_B} )
                      );
@@ -203,20 +203,6 @@ always @ ( * )
           else
             rBranchTaken <= 1'b0;
 
-        end
-
-      //-------------------------------------
-      `BGE:
-        begin
-          rWriteEnable <= 1'b0;
-          {rResultHI, rResult} <= 32'd0;
-          rVGAWriteEnable <= 1'b0;
-          rRetCall <= 1'b0;
-
-          if (wSourceData1 >= wSourceData0 )
-            rBranchTaken <= 1'b1;
-          else
-            rBranchTaken <= 1'b0;
         end
 
       //-------------------------------------
