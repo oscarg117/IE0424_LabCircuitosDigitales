@@ -57,6 +57,14 @@
 `define YELLOW  3'd6
 `define WHITE   3'd7
 
+//PS2
+`define W 8'h1D
+`define A 8'h1C
+`define S 8'h1B
+`define D 8'h23
+`define DER 8'h74
+`define IZQ 8'h6B
+
 `endif
 
 

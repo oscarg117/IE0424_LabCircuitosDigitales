@@ -109,3 +109,91 @@ UPCOUNTER_POSEDGE # (10) VERTICAL_COUNTER
 
 endmodule
   //----------------------------------------------------------------------
+//*
+module PS2_Controller
+  (
+  	input wire Reset,
+  	input wire PS2_CLK,
+  	input wire PS2_DATA,
+  	output reg [9:0] oXisqr
+  );
+
+reg [7:0] ScanCode;
+reg [8:0] rDataBuffer;
+reg Done, Read;
+reg [3:0] ClockCounter;
+reg rFlagF0, rFlagNoError;
+
+always @ (negedge PS2_CLK or posedge Reset) begin
+	if (Reset) begin
+		ClockCounter <= 0;
+		Read <= 1;
+		Done <= 0;
+		end
+	else begin
+		if (Read == 1'b1 && PS2_DATA == 1'b0) begin
+			Read <= 0;
+			Done <= 0;
+			end
+		else if (Read == 1'b0) begin
+			if (ClockCounter < 9) begin
+				ClockCounter <= ClockCounter + 1;
+				rDataBuffer <= {PS2_DATA, rDataBuffer[8:1]};
+				Done <= 0;
+				end
+			else begin
+				ClockCounter <= 1'b0;
+				Done <= 1;
+				ScanCode <= rDataBuffer[7:0];
+				Read <= 1;
+				if (^ScanCode == rDataBuffer[8])
+					rFlagNoError <= 1'b0;
+				else
+					rFlagNoError <= 1'b1;
+				end
+
+		end
+	end
+end
+
+always @ (posedge Done or posedge Reset) begin
+	if (Reset) begin
+		oXisqr <= {7'd28, 3'd0};
+		rFlagF0 <= 1'b0;
+		end
+	else begin
+		if (rFlagF0) begin
+			rFlagF0 <= 1'b0;
+		end
+		else
+		case (ScanCode)
+			`IZQ: begin
+				oXisqr <= {7'd28, 3'd0};//10'd0;
+				rFlagF0 <= rFlagF0;
+			end
+
+			`DER: begin
+				oXisqr <= {7'd40, 3'd0};//10'd96;
+				rFlagF0 <= rFlagF0;
+			end
+
+			8'hF0: begin	//Se�al de finalizacion del PS2
+				oXisqr <= oXisqr;
+				rFlagF0 <= 1'b1;
+			end
+
+			8'h29: begin	//29 = Barra Espaciadora
+				oXisqr <= oXisqr;
+				rFlagF0 <= rFlagF0;
+			end
+
+			default: begin
+				oXisqr <= oXisqr;
+				rFlagF0 <= rFlagF0;
+			end
+		endcase
+	end
+end
+
+endmodule
+  //*/

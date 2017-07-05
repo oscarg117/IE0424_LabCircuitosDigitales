@@ -27,7 +27,8 @@ module TestBench;
 // Inputs
 reg Clock;
 reg Reset;
-
+reg PS2_CLK;
+reg PS2_DATA;
 // Outputs
 wire oVGA_R;
 wire oVGA_G;
@@ -39,6 +40,8 @@ wire oV_sync;
 MiniAlu uut (
           .Clock(Clock),
           .Reset(Reset),
+          .PS2_CLK(PS2_CLK),
+      		.PS2_DATA(PS2_DATA),
           .VGA_RED(oVGA_R),
           .VGA_GREEN(oVGA_G),
           .VGA_BLUE(oVGA_B),
@@ -56,6 +59,8 @@ initial
     // Initialize Inputs
     Clock = 0;
     Reset = 0;
+    PS2_CLK = 1;
+		PS2_DATA = 1;
 
     // Wait 100 ns for global reset to finish
     #100;

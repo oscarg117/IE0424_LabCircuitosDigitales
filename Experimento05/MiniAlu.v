@@ -5,6 +5,8 @@ module MiniAlu
        (
          input  wire Clock,
          input  wire Reset,
+         input  wire PS2_CLK,
+         input  wire PS2_DATA,
          output wire VGA_RED, VGA_GREEN, VGA_BLUE,
          output wire VGA_HSYNC,
          output wire VGA_VSYNC
@@ -30,7 +32,7 @@ wire [9:0] wCurrCol, wCurrRow;
 wire [9:0] wXisqr;
 wire [2:0] wRGB2VRAM;
 
-assign wXisqr = ({7'd28, 3'd0});
+//assign wXisqr = ({7'd28, 3'd0});
 
 
 assign wCurrCol = ( wHcnt >= `HS_Tbp &&
@@ -52,7 +54,6 @@ UPCOUNTER_POSEDGE # ( 1 ) HalfCLK
                   );
 
 
-
 VGA_controller VGA_ctrl
                (
                  .clk25MHz( Clock25MHz ),
@@ -66,6 +67,32 @@ VGA_controller VGA_ctrl
                  .oHcnt( wHcnt )
                );
 
+reg [7:0] Filter;
+reg FClock;
+always @ (posedge Clock25MHz) begin
+	Filter <= {PS2_CLK, Filter[7:1]};
+	if (Filter == 8'hFF) FClock = 1'b1;
+	if (Filter == 8'd0) FClock = 1'b0;
+end
+
+reg [7:0] FilterData;
+reg FData;
+always @ (posedge Clock25MHz) begin
+	FilterData <= {PS2_DATA, FilterData[7:1]};
+	if (FilterData == 8'hFF) FData = 1'b1;
+	if (FilterData == 8'd0) FData = 1'b0;
+end
+
+
+PS2_Controller PS2_Controller
+(
+	.Reset(Reset),
+	.PS2_CLK(FClock),
+	.PS2_DATA(FData),
+	.oXisqr(wXisqr)
+);
+
+//*/
 
 
 ROM InstructionRom
