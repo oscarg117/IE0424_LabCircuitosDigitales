@@ -77,7 +77,7 @@ assign wFromVRAM_B = iFromVRAM_RGB[0];
 assign oToVGA_RGB = ( (oVcnt >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET-56) &&
                       (oHcnt > `H_OFFSET+iXisqr &&
                        oHcnt < `H_OFFSET+iXisqr+48) )
-                    ? `BLUE : {wToVGA_R, wToVGA_G, wToVGA_B};
+                    ? `RED : {wToVGA_R, wToVGA_G, wToVGA_B};
 
 assign oHSync = (oHcnt < `HS_Ts - `HS_Tpw) ? 1'b1 : 1'b0;
 assign wEOL = (oHcnt == `HS_Ts - 1);
@@ -168,13 +168,21 @@ always @ (posedge Done or posedge Reset) begin
 		else
 		case (ScanCode)
 			`IZQ: begin
-				oXisqr <= {7'd28, 3'd0};//10'd0;
-				rFlagF0 <= rFlagF0;
+          rFlagF0 <= rFlagF0;
+          if (oXisqr <= {7'd28, 3'd0}) begin
+              oXisqr <= {7'd28, 3'd0};
+          end else begin
+              oXisqr <= oXisqr - {7'd6, 3'd0};
+          end
 			end
 
 			`DER: begin
-				oXisqr <= {7'd40, 3'd0};//10'd96;
-				rFlagF0 <= rFlagF0;
+          rFlagF0 <= rFlagF0;
+          if (oXisqr >= {7'd58, 3'd0}) begin
+              oXisqr <= {7'd58, 3'd0};
+          end else begin
+              oXisqr <= oXisqr + {7'd6, 3'd0};
+          end
 			end
 
 			8'hF0: begin	//Se�al de finalizacion del PS2

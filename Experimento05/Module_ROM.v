@@ -34,7 +34,7 @@ localparam OFFS_X = 16'd22;
 localparam OFFS_Y = 16'd0;
 
 localparam RSQR_X  = OFFS_X+16'd14;
-localparam RSQR_Y  = VRAM_H-SQR_W-16'd6;
+localparam RSQR_Y  = VRAM_H-SQR_W-16'd5;
 
 
 
@@ -67,7 +67,7 @@ always @ ( iAddress )
               18 : oInstruction = { `STO , `R5, RSQR_Y}; //R5=yi
               19 : oInstruction = { `ADD , `R2, `R4, `R6}; //R2=xf
               20 : oInstruction = { `ADD , `R3, `R5, `R6}; //R3=yf
-              21 : oInstruction = { `RGB , 8'd0, `COLOR_RED, 8'd0}; //Set color
+              21 : oInstruction = { `RGB , 8'd0, `COLOR_BLUE, 8'd0}; //Set color
               22 : oInstruction = { `CALL , `DRAW_SQR, 16'd0};
 
               //23 : oInstruction = { `INC , `R8, `R8, 8'd0}; //R8=xsoff++
