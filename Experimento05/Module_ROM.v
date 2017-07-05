@@ -45,8 +45,8 @@ always @ ( iAddress )
       /*--------------------------------------------------------------*/
               0  : oInstruction = { `NOP , 24'd0 };
               1  : oInstruction = { `STO , `R6, SQR_W}; //R6=sqr width
-              2  : oInstruction = { `STO , `R7, 16'd22}; //R7=xsi
-              3  : oInstruction = { `STO , `R9, 16'd30}; //R9=xsoff max
+              2  : oInstruction = { `STO , `R7, 16'd0}; //R7=xsi
+              3  : oInstruction = { `STO , `R9, 16'd60}; //R9=xsoff max
 
               4  : oInstruction = { `STO , `R4, 16'd0}; //R4=xi
               5  : oInstruction = { `STO , `R5, 16'd0}; //R5=yi
@@ -63,8 +63,8 @@ always @ ( iAddress )
               15 : oInstruction = { `RGB , 8'd0, `COLOR_BLACK, 8'd0}; //Set color
               16 : oInstruction = { `CALL , `DRAW_SQR, 16'd0};
 
-              17 : oInstruction = { `ADD , `R4, `R7, `R8}; //R4=xsi+xsoff
-              18 : oInstruction = { `STO , `R5, RSQR_Y}; //R5=yi
+              17 : oInstruction = { `STO , `R4, RSQR_Y}; //R4=xsi+xsoff
+              18 : oInstruction = { `ADD , `R5, `R7, `R8}; //R5=yi
               19 : oInstruction = { `ADD , `R2, `R4, `R6}; //R2=xf
               20 : oInstruction = { `ADD , `R3, `R5, `R6}; //R3=yf
               21 : oInstruction = { `RGB , 8'd0, `COLOR_BLUE, 8'd0}; //Set color
