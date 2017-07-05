@@ -13,10 +13,11 @@
 `define SUB   4'd6
 `define CALL  4'd7
 `define RET   4'd8
-`define VGA   4'd9
-`define INC   4'd10
-`define MOV   4'd11
-`define BEQ   4'd12
+`define INC   4'd9
+`define MOV   4'd10
+`define BEQ   4'd11
+`define RGB   4'd12
+`define STC   4'd13
 
 
 `define R0  8'd0

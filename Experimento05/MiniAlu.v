@@ -21,11 +21,13 @@ reg [15:0] rResult, rResultHI;
 reg rVGAWriteEnable;
 reg rRetCall;
 reg [7: 0] rRetIP;
+reg rRGB2VRAM;
 
 wire [7:0] wRetCall;
 wire wVGA_R, wVGA_G, wVGA_B;
 wire [9:0] wHcnt, wVcnt;
 wire [9:0] wCurrCol, wCurrRow;
+wire [2:0] wRGB2VRAM;
 
 assign wCurrCol = ( wHcnt >= `HS_Tbp &&
                    wHcnt < `HS_Tdisp + `HS_Tbp) ?
@@ -74,7 +76,7 @@ RAM_SINGLE_READ_PORT # (3, 13, 80*60) VideoRAM
                        .iWriteEnable( rVGAWriteEnable ),
                        .iReadAddress( {wCurrRow[8:3], wCurrCol[9:3]} ),  // Row, Col
                        .iWriteAddress( {wSourceData0[5:0], wSourceData1[6:0]} ),  // Row, Col
-                       .iDataIn( wDestination[2:0] ),
+                       .iDataIn( wRGB2VRAM ),
                        .oDataOut( {wVGA_R, wVGA_G, wVGA_B} )
                      );
 
@@ -147,6 +149,15 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD4
                                .Q(wDestination)
                              );
 
+FFD_POSEDGE_SYNCRONOUS_RESET # ( 3 ) FFD_RGB
+                            (                //Registro de Color
+                              .Clock(Clock),
+                              .Reset(Reset),
+                              .Enable(rRGB2VRAM),
+                              .D(wSourceAddr1[2:0]),
+                              .Q(wRGB2VRAM)
+                            );
+
 always @ ( * )
   begin
     case (wOperation)
@@ -158,6 +169,7 @@ always @ ( * )
           {rResultHI, rResult} <= 32'd0;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
         end
 
       //-------------------------------------
@@ -168,6 +180,7 @@ always @ ( * )
           {rResultHI, rResult} <= wSourceData1 + wSourceData0;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
         end
 
       //-------------------------------------
@@ -178,6 +191,7 @@ always @ ( * )
           {rResultHI, rResult} <= wSourceData1 - wSourceData0;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
         end
 
       //-------------------------------------
@@ -188,6 +202,7 @@ always @ ( * )
           {rResultHI, rResult} <= wImmediateValue;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'b0;
         end
 
       //-------------------------------------
@@ -197,8 +212,24 @@ always @ ( * )
           {rResultHI, rResult} <= 32'd0;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
 
           if (wSourceData1 <= wSourceData0 )
+            rBranchTaken <= 1'b1;
+          else
+            rBranchTaken <= 1'b0;
+
+        end
+      //-------------------------------------
+      `BEQ:
+        begin
+          rWriteEnable <= 1'b0;
+          {rResultHI, rResult} <= 32'd0;
+          rVGAWriteEnable <= 1'b0;
+          rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
+
+          if (wSourceData1 == wSourceData0 )
             rBranchTaken <= 1'b1;
           else
             rBranchTaken <= 1'b0;
@@ -213,6 +244,7 @@ always @ ( * )
           rBranchTaken <= 1'b1;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
         end
 
       //-------------------------------------
@@ -224,6 +256,7 @@ always @ ( * )
           {rResultHI, rResult} <= wSourceData1 * wSourceData0;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
         end
 
       //--------------------------------------
@@ -234,6 +267,7 @@ always @ ( * )
           rBranchTaken <= 1'b1;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
         end
 
       //--------------------------------------
@@ -244,16 +278,7 @@ always @ ( * )
           rBranchTaken <= 1'b1;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b1;
-        end
-
-      //-------------------------------------
-      `VGA:
-        begin
-          rWriteEnable <= 1'b0;
-          rBranchTaken <= 1'b0;
-          {rResultHI, rResult} <= 32'd0;
-          rVGAWriteEnable <= 1'b1;
-          rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
         end
 
       //-------------------------------------
@@ -264,6 +289,7 @@ always @ ( * )
           {rResultHI, rResult} <= wSourceData1 + 1;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
         end
 
       //-------------------------------------
@@ -274,7 +300,31 @@ always @ ( * )
           {rResultHI, rResult} <= wSourceData1;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
         end
+
+        //-------------------------------------
+        `RGB:
+          begin
+            rWriteEnable <= 1'b0;
+            rBranchTaken <= 1'b0;
+            {rResultHI, rResult} <= 32'd0;
+            rVGAWriteEnable <= 1'b0;
+            rRetCall <= 1'b0;
+            rRGB2VRAM <= 1'b1;
+          end
+
+        //-------------------------------------
+        `STC:
+          begin
+            rWriteEnable <= 1'b0;
+            rBranchTaken <= 1'b0;
+            {rResultHI, rResult} <= 32'd0;
+            rVGAWriteEnable <= 1'b1;
+            rRetCall <= 1'b0;
+            rRGB2VRAM <= 1'd0;
+          end
+
 
       //-------------------------------------
       default:
@@ -284,6 +334,7 @@ always @ ( * )
           rBranchTaken <= 1'b0;
           rVGAWriteEnable <= 1'b0;
           rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
         end
 
       //-------------------------------------
