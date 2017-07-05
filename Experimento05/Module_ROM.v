@@ -46,7 +46,7 @@ always @ ( iAddress )
               0  : oInstruction = { `NOP , 24'd0 };
               1  : oInstruction = { `STO , `R6, SQR_W}; //R6=sqr width
               2  : oInstruction = { `STO , `R7, 16'd22}; //R7=xsi
-              3  : oInstruction = { `STO , `R9, 16'd30}; //R9=xsoff max
+              3  : oInstruction = { `STO , `R9, 16'd6}; //R9=xsoff max
 
               4  : oInstruction = { `STO , `R4, 16'd0}; //R4=xi
               5  : oInstruction = { `STO , `R5, 16'd0}; //R5=yi
@@ -55,11 +55,11 @@ always @ ( iAddress )
               8  : oInstruction = { `RGB , 8'd0, `COLOR_CYAN, 8'd0}; //Set color
               9  : oInstruction = { `CALL , `DRAW_SQR, 16'd0 }; //Dibuja un cuadro
 
-/*SET_XSOFF*/ 10 : oInstruction = { `STO , `R8, 16'd0}; //R8=xsoff
+/*SET_XSOFF*/ 10 : oInstruction = { `STO , `R8, 16'd6}; //R8=xsoff
 /*UPD_BG*/    11 : oInstruction = { `STO , `R4, OFFS_X}; //R4=xi
               12 : oInstruction = { `STO , `R5, OFFS_Y}; //R5=yi
               13 : oInstruction = { `STO , `R2, (VRAM_W-OFFS_X+16'd1)}; //R2=xf
-              14 : oInstruction = { `STO , `R3, (VRAM_H-OFFS_Y)}; //R3=yf
+              14 : oInstruction = { `STO , `R3, (VRAM_H-OFFS_Y+16'd1)}; //R3=yf
               15 : oInstruction = { `RGB , 8'd0, `COLOR_BLACK, 8'd0}; //Set color
               16 : oInstruction = { `CALL , `DRAW_SQR, 16'd0};
 

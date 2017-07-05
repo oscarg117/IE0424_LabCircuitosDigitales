@@ -27,7 +27,11 @@ wire [7:0] wRetCall;
 wire wVGA_R, wVGA_G, wVGA_B;
 wire [9:0] wHcnt, wVcnt;
 wire [9:0] wCurrCol, wCurrRow;
+wire [9:0] wXisqr;
 wire [2:0] wRGB2VRAM;
+
+assign wXisqr = ({7'd28, 3'd0});
+
 
 assign wCurrCol = ( wHcnt >= `HS_Tbp &&
                    wHcnt < `HS_Tdisp + `HS_Tbp) ?
@@ -54,6 +58,7 @@ VGA_controller VGA_ctrl
                  .clk25MHz( Clock25MHz ),
                  .Reset( Reset ),
                  .iFromVRAM_RGB( {wVGA_R, wVGA_G, wVGA_B} ),
+                 .iXisqr(wXisqr),
                  .oToVGA_RGB( {VGA_RED, VGA_GREEN, VGA_BLUE} ),
                  .oHSync( VGA_HSYNC ),
                  .oVSync( VGA_VSYNC ),

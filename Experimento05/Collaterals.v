@@ -57,7 +57,8 @@ endmodule
   (
     input wire clk25MHz,
     input wire Reset,
-    input wire	[2:0]	iFromVRAM_RGB,
+    input wire [2:0]	iFromVRAM_RGB,
+    input wire [9:0] iXisqr,
     output wire	[2:0]	oToVGA_RGB,
     output wire	oHSync,
     output wire	oVSync,
@@ -71,7 +72,12 @@ wire wEOL;
 assign wFromVRAM_R = iFromVRAM_RGB[2];
 assign wFromVRAM_G = iFromVRAM_RGB[1];
 assign wFromVRAM_B = iFromVRAM_RGB[0];
-assign oToVGA_RGB = {wToVGA_R, wToVGA_G, wToVGA_B};
+
+//assign oToVGA_RGB = {wToVGA_R, wToVGA_G, wToVGA_B};
+assign oToVGA_RGB = ( (oVcnt >= `VS_lines_Ts-`VS_lines_Tpw-`VS_lines_Tfp-`V_OFFSET-56) &&
+                      (oHcnt > `H_OFFSET+iXisqr &&
+                       oHcnt < `H_OFFSET+iXisqr+48) )
+                    ? `BLUE : {wToVGA_R, wToVGA_G, wToVGA_B};
 
 assign oHSync = (oHcnt < `HS_Ts - `HS_Tpw) ? 1'b1 : 1'b0;
 assign wEOL = (oHcnt == `HS_Ts - 1);
