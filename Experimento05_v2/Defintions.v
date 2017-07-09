@@ -5,19 +5,21 @@
 `default_nettype none
 
 `define NOP   4'd0
-`define SMUL  4'd1
+`define MUL   4'd1
 `define BLE   4'd2
 `define STO   4'd3
 `define ADD   4'd4
 `define JMP   4'd5
-`define SUB   4'd6
+`define BNE   4'd6
 `define CALL  4'd7
 `define RET   4'd8
 `define INC   4'd9
-`define MOV   4'd10
-`define BEQ   4'd11
-`define RGB   4'd12
-`define STC   4'd13
+`define LED   4'd10
+`define RGB   4'd11
+`define STC   4'd12
+`define ADDi  4'd13
+`define MULi  4'd14
+`define DFT   4'd15
 
 
 `define R0  8'd0
@@ -64,6 +66,8 @@
 `define D 8'h23
 `define DER 8'h74
 `define IZQ 8'h6B
+`define ARR 8'h75
+`define ABA 8'h72
 
 `endif
 
