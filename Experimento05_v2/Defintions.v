@@ -60,14 +60,16 @@
 `define WHITE   3'd7
 
 //PS2
-`define W 8'h1D
-`define A 8'h1C
-`define S 8'h1B
-`define D 8'h23
-`define DER 8'h74
-`define IZQ 8'h6B
-`define ARR 8'h75
-`define ABA 8'h72
+`define W       8'h1D
+`define A       8'h1C
+`define S       8'h1B
+`define D       8'h23
+`define RIG     8'h74
+`define LEF     8'h6B
+`define UP      8'h75
+`define DOW     8'h72
+`define SPACE   8'h29
+`define END_PS2 8'hF0
 
 `endif
 

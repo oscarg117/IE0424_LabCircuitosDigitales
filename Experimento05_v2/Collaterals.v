@@ -116,7 +116,8 @@ reg [7: 0] ScanCode;
 reg [8: 0] rDataBuffer;
 reg Done, Read;
 reg [3: 0] ClockCounter;
-reg rFlagF0, rFlagNoError;
+reg rFlagNoError;
+reg rFlagF0;
 
 always @ (negedge PS2_CLK or posedge Reset)
   begin
@@ -162,7 +163,7 @@ always @ (posedge Done or posedge Reset)
   begin
     if (Reset)
       begin
-        oXk <= 4'd2;
+        oXk <= 4'd1;
         oYk <= 4'd8;
         rFlagF0 <= 1'b0;
       end
@@ -170,18 +171,17 @@ always @ (posedge Done or posedge Reset)
       begin
         if (rFlagF0)
           begin
-            rFlagF0 <= 1'b0;
+            rFlagF0 <= 1'd0;
           end
         else
           case (ScanCode)
-            `IZQ:
+            `LEF:
               begin
                 oYk <= oYk;
                 rFlagF0 <= rFlagF0;
-
                 if (oXk <= 4'd0)
                   begin
-                    oXk <= 4'd5;
+                    oXk <= 4'd3;
                   end
                 else
                   begin
@@ -189,12 +189,11 @@ always @ (posedge Done or posedge Reset)
                   end
               end
 
-            `DER:
+            `RIG:
               begin
                 oYk <= oYk;
                 rFlagF0 <= rFlagF0;
-
-                if (oXk >= 4'd5)
+                if (oXk >= 4'd3)
                   begin
                     oXk <= 4'd0;
                   end
@@ -204,11 +203,10 @@ always @ (posedge Done or posedge Reset)
                   end
               end
 
-            `ARR:
+            `UP :
               begin
                 oXk <= oXk;
                 rFlagF0 <= rFlagF0;
-
                 if (oYk <= 4'd0)
                   begin
                     oYk <= 4'd0;
@@ -219,11 +217,10 @@ always @ (posedge Done or posedge Reset)
                   end
               end
 
-            `ABA:
+            `DOW:
               begin
                 oXk <= oXk;
                 rFlagF0 <= rFlagF0;
-
                 if (oYk >= 4'd9)
                   begin
                     oYk <= 4'd9;
@@ -234,18 +231,18 @@ always @ (posedge Done or posedge Reset)
                   end
               end
 
-            8'hF0:
+            `END_PS2:
               begin	//Señal de finalizacion del PS2
                 oXk <= oXk;
                 oYk <= oYk;
                 rFlagF0 <= 1'b1;
               end
 
-            8'h29:
+            `SPACE:
               begin	//29 = Barra Espaciadora
-                oXk <= oXk;
-                oYk <= oYk;
-                rFlagF0 <= rFlagF0;
+                oXk <= 4'd1;
+                oYk <= 4'd8;
+                rFlagF0 <= 1'd0;
               end
 
             default:

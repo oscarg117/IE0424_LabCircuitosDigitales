@@ -7,7 +7,7 @@ module MiniAlu
          input wire Reset,
          input wire PS2_CLK,
          input wire PS2_DATA,
-         output wire [2:0] oLed,
+         output wire [7:0] oLed,
          output wire VGA_RED, VGA_GREEN, VGA_BLUE,
          output wire VGA_HSYNC,
          output wire VGA_VSYNC
@@ -57,7 +57,7 @@ wire [15:0] wTim1;
 UPCOUNTER_POSEDGE # ( 16 ) CLKTim1
                   (
                     .Clock( Clock25MHz ),
-                    .Reset( Reset),
+                    .Reset( Reset ),
                     .Initial( 16'd0 ),
                     .Enable( 1'b1 ),
                     .Q( wTim1 )
@@ -66,14 +66,11 @@ wire [9:0] wTim2;
 UPCOUNTER_POSEDGE # ( 10 ) CLKTim2
                   (
                     .Clock( (wTim1 == 0) ),
-                    .Reset( Reset),
+                    .Reset( Reset ),
                     .Initial( 10'd0 ),
                     .Enable( 1'b1 ),
                     .Q( wTim2 )
                   );
-
-
-
 
 VGA_controller VGA_ctrl
                (
@@ -122,7 +119,7 @@ ROM InstructionRom
       .iAddress( wIP ),
       .iShipX(wXk),
       .iShipY(wYk),
-      .iFooX({2'd0, wTim2[9:8]}),
+      .iFooX( {2'd0, wTim2[9:8]} ),
       .oInstruction( wInstruction )
     );
 
@@ -216,14 +213,14 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 3 ) FFD_RGB
                              );
 
 reg rFFLedEN;
-FFD_POSEDGE_SYNCRONOUS_RESET # ( 3 ) FF_LEDS
-(
-	.Clock(Clock),
-	.Reset(Reset),
-	.Enable( rFFLedEN ),
-	.D( wSourceData1[2:0] ),
-	.Q( oLed    )
-);
+FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FF_LEDS
+                             (                //Registros LEDs
+                             	.Clock(Clock),
+                             	.Reset(Reset),
+                             	.Enable( rFFLedEN ),
+                             	.D( wSourceData1[7:0] ),
+                             	.Q( oLed    )
+                             );
 
 always @ ( * )
   begin
@@ -419,18 +416,7 @@ always @ ( * )
             rRetCall <= 1'b0;
             rRGB2VRAM <= 1'd0;
           end
-      //-------------------------------------
-      `LED:
-        begin
-          rDefault     <= 1'b0;
-          rFFLedEN     <= 1'b1;
-          rWriteEnable <= 1'b0;
-          {rResultHI, rResult} <= 32'd0;
-          rBranchTaken <= 1'b0;
-          rVGAWriteEnable <= 1'b0;
-          rRetCall <= 1'b0;
-          rRGB2VRAM <= 1'd0;
-        end
+
       //-------------------------------------
       `DFT:
         begin
@@ -443,10 +429,24 @@ always @ ( * )
           rRetCall <= 1'b0;
           rRGB2VRAM <= 1'd0;
         end
+
+      //-------------------------------------
+      `LED:
+        begin
+          rDefault     <= 1'b0;
+          rFFLedEN     <= 1'b1;
+          rWriteEnable <= 1'b0;
+          {rResultHI, rResult} <= 32'd0;
+          rBranchTaken <= 1'b0;
+          rVGAWriteEnable <= 1'b0;
+          rRetCall <= 1'b0;
+          rRGB2VRAM <= 1'd0;
+        end
     //-------------------------------------
       default:
         begin
           rDefault     <= 1'b0;
+          rFFLedEN     <= 1'b0;
           rWriteEnable <= 1'b0;
           {rResultHI, rResult} <= 32'd0;
           rBranchTaken <= 1'b0;

@@ -30,7 +30,7 @@ reg Reset;
 reg PS2_CLK;
 reg PS2_DATA;
 // Outputs
-wire [2:0] oLed;
+wire [7:0] oLed;
 wire oVGA_R;
 wire oVGA_G;
 wire oVGA_B;
@@ -41,9 +41,9 @@ wire oV_sync;
 MiniAlu uut (
           .Clock(Clock),
           .Reset(Reset),
-          .oLed(oLed),
           .PS2_CLK(PS2_CLK),
       		.PS2_DATA(PS2_DATA),
+          .oLed(oLed),
           .VGA_RED(oVGA_R),
           .VGA_GREEN(oVGA_G),
           .VGA_BLUE(oVGA_B),
