@@ -19,7 +19,7 @@
 `define DRAW_SHIP   8'd89
 `define DRW_FOO     8'd229
 
-`define DELAY       16'd724
+`define DELAY       16'd720
 
 
 module ROM
